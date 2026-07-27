@@ -126,7 +126,44 @@
     <!-- Enlace de descarga de Planilla Base en PDF -->
     <a href="planilla.pdf" download class="btn-desc">📥 Descargar Planilla de Inscripción para Beneficiarios</a>
 </div>
+<div class="container">
+    <h2>Subir Documentos</h2>
 
+    <!-- Botón 1: Cédula (Cámara o Galería) -->
+    <div class="upload-group">
+      <label>Cédula de Identidad (Imagen)</label>
+      <input type="file" id="input-cedula" accept="image/*">
+      <button class="btn-upload" onclick="document.getElementById('input-cedula').click()">
+        📷 Seleccionar Cédula
+      </button>
+      <div id="name-cedula" class="file-name">Ningún archivo seleccionado</div>
+    </div>
+
+    <!-- Botón 2: RIF (Solo PDF) -->
+    <div class="upload-group">
+      <label>RIF (Archivo PDF)</label>
+      <input type="file" id="input-rif" accept="application/pdf">
+      <button class="btn-upload btn-rif" onclick="document.getElementById('input-rif').click()">
+        📄 Seleccionar RIF
+      </button>
+      <div id="name-rif" class="file-name">Ningún archivo seleccionado</div>
+    </div>
+  </div>
+
+  <script>
+    // Mostrar el nombre del archivo de la Cédula al seleccionarlo
+    document.getElementById('input-cedula').addEventListener('change', function(e) {
+      const fileName = e.target.files[0] ? e.target.files[0].name : 'Ningún archivo seleccionado';
+      document.getElementById('name-cedula').textContent = 'Seleccionado: ' + fileName;
+    });
+
+    // Mostrar el nombre del archivo del RIF al seleccionarlo
+    document.getElementById('input-rif').addEventListener('change', function(e) {
+      const fileName = e.target.files[0] ? e.target.files[0].name : 'Ningún archivo seleccionado';
+      document.getElementById('name-rif').textContent = 'Seleccionado: ' + fileName;
+    });
+  </script>
+    
 <!-- Enlaces de Firebase oficiales compatibles con GitHub Pages -->
 <script src="https://gstatic.com"></script>
 <script src="https://gstatic.com"></script>
