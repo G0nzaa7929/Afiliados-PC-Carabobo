@@ -141,6 +141,64 @@
 <script src="https://gstatic.com"></script>
 
 <script>
+window.addEventListener('DOMContentLoaded', () => {
+
+    // 1. CONTROL DEL BOTÓN LIMPIAR
+    const btnLimpiar = document.getElementById('btnLimpiar');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', () => {
+            const formulario = document.querySelector('form');
+            if (formulario) {
+                formulario.reset();
+                alert("Formulario vaciado con éxito");
+            } else {
+                alert("No se encontró ningún formulario para limpiar");
+            }
+        });
+    }
+
+    // 2. CONTROL DEL BOTÓN GUARDAR
+    const btnGuardar = document.getElementById('btnGuardar');
+    if (btnGuardar) {
+        btnGuardar.addEventListener('click', () => {
+            
+            // Buscamos el campo RIF de forma inteligente (por ID o por su etiqueta de texto)
+            let campoRif = document.getElementById('rif') || 
+                           document.getElementById('txtRif') || 
+                           document.querySelector('input[type="text"]'); // Agarra la primera casilla si falla lo demás
+
+            if (!campoRif || campoRif.value.trim() === "") {
+                alert("Por favor, escribe la serie de números (RIF o Cédula) antes de guardar.");
+                return;
+            }
+
+            const serieNumeros = campoRif.value.trim();
+
+            // Creamos un paquete de datos básico para probar la nube
+            const datosAEnviar = {
+                identificador: serieNumeros,
+                fechaRegistro: new Date().toLocaleString(),
+                estatus: "Activo"
+            };
+
+            // Intentamos guardar usando esa serie de números como la llave en Firebase
+            // (Asegúrate de que tu variable de base de datos se llame 'db')
+            if (typeof db !== 'undefined') {
+                db.ref('afiliados/' + serieNumeros).set(datosAEnviar)
+                .then(() => {
+                    alert("¡Excelente! Los números " + serieNumeros + " se guardaron en Firebase.");
+                })
+                .catch((error) => {
+                    alert("Firebase rechazó los números. Error: " + error.message);
+                });
+            } else {
+                alert("Error técnico: La conexión con Firebase no está cargada en esta página.");
+            }
+        });
+    }
+});
+    
+<script>
     // Credenciales de tu proyecto Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBrDX4SWQEd0wM",
@@ -264,6 +322,9 @@ document.getElementById('btnGuardar').addEventListener('click', function() {
         alert("Error al guardar: " + error.message);
     });
 });
+
+<button type="button" id="btnGuardar">Guardar Cambios</button>
+<button type="button" id="btnLimpiar">Limpiar Formulario</button>
 
     
 </script>
