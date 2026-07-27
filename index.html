@@ -145,12 +145,9 @@
 
 <!-- LOGICA DE CONTROL Y CONEXION -->
 <script type="module">
-    import { initializeApp } from 
-        "gstatic.com";
-    import { getDatabase, ref, set, get, child } from 
-        "gstatic.com";
-    import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from 
-        "gstatic.com";
+    const { initializeApp } = await import("https://unpkg.com");
+    const { getDatabase, ref, set, get, child } = await import("https://unpkg.com");
+    const { getStorage, ref as sRef, uploadBytes, getDownloadURL } = await import("https://unpkg.com");
 
     // CONTRASEÑA ASIGNADA (Puedes cambiarla aquí mismo en el Bloc de notas)
     const CONTRASEÑA_CORRECTA = "campesinos2026";
@@ -165,7 +162,6 @@
             alert("Contraseña incorrecta. Acceso denegado.");
         }
     });
-
     const firebaseConfig = {
         apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBrDX4SWQEd0wM",
         authDomain: "://firebaseapp.com",
