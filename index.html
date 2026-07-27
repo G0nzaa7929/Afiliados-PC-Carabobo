@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Privado - PC Carabobo</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background-color: #f4f4f4; color: #333; }
+        
+        /* Pantalla de Bloqueo / Contraseña */
+        .login-box { max-width: 400px; margin: 100px auto; background: white; padding: 30px; border: 1px solid #ccc; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .login-box input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-size: 16px; }
+        
+        /* Contenedor del Sistema Principal (Oculto al inicio) */
+        .container { display: none; max-width: 800px; margin: auto; background: white; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .header-title { text-align: center; font-weight: bold; font-size: 13px; padding: 0 5px; line-height: 1.4; }
+        .header-logo { width: 55px; height: 55px; object-fit: contain; }
+        .section-title { background: #0056b3; color: white; padding: 8px; font-weight: bold; margin-top: 20px; border-radius: 4px; font-size: 14px; }
+        .form-group { margin: 15px 0; display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input[type="text"], textarea, input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; }
+        textarea { height: 80px; resize: vertical; }
+        .file-note { font-size: 12px; color: #666; margin-top: 4px; font-style: italic; }
+        .row-check { margin: 12px 0; display: flex; align-items: center; font-size: 14px; line-height: 1.3; }
+        .row-check input[type="checkbox"] { width: 22px; height: 22px; margin-right: 10px; cursor: pointer; flex-shrink: 0; }
+        .search-box { background: #eef7ff; padding: 15px; border: 1px solid #b6d4fe; margin-bottom: 15px; border-radius: 6px; }
+        .btn-container { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        button { width: 100%; padding: 12px; font-weight: bold; font-size: 15px; cursor: pointer; border: none; border-radius: 4px; }
+        .btn-blue { background: #007bff; color: white; }
+        .btn-green { background: #28a745; color: white; }
+        .btn-gray { background: #6c757d; color: white; }
+        .link-descarga { display: inline-block; margin-top: 5px; color: #0056b3; font-weight: bold; text-decoration: none; }
+        
+        @media (min-width: 600px) {
+            body { padding: 20px; }
+            .container { padding: 25px; }
+            .header-title { font-size: 15px; }
+            .header-logo { width: 65px; height: 65px; }
+            .form-group { flex-direction: row; align-items: center; }
+            label { width: 200px; margin-bottom: 0; }
+            input[type="text"], input[type="file"] { width: 350px; }
+            .btn-container { flex-direction: row; justify-content: center; }
+            button { width: auto; padding: 10px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- PANTALLA DE ACCESO PROTEGIDO -->
+<div id="pantallaLogin" class="login-box">
+    <h2 style="color: #0056b3; margin: 0;">🔒 Acceso Restringido</h2>
+    <p style="font-size: 14px; color: #666; margin-top: 5px;">SISTEMA CONTROL DE AFILIADOS PC CARABOBO</p>
+    <input type="password" id="campoClave" placeholder="Introduce la contraseña de la Cámara">
+    <button type="button" id="btnIngresar" class="btn-blue">Ingresar al Sistema</button>
+</div>
+
+<!-- SISTEMA PRINCIPAL -->
+<div id="sistemaPrincipal" class="container">
+    <table class="header-table">
+        <tr>
+            <td style="width: 60px; text-align: left;"><img src="logo.jpg" alt="Logo L" class="header-logo"></td>
+            <td class="header-title">
+                JUNTA DIRECTIVA AD HOC DE LA FCBV<br>
+                CÁMARA DE PRODUCTORES Y CAMPESINOS DE CARABOBO<br>
+                SISTEMA DE CONTROL DE AFILIADOS
+            </td>
+            <td style="width: 60px; text-align: right;"><img src="logo2.jpg" alt="Logo R" class="header-logo"></td>
+        </tr>
+    </table>
+
+    <div class="search-box">
+        <div class="form-group" style="margin: 0 0 10px 0;">
+            <label for="buscarRIF">Buscar por RIF:</label>
+            <input type="text" id="buscarRIF" placeholder="Ej: J-12345678-0">
+        </div>
+        <button type="button" id="btnBuscar" class="btn-blue">🔍 Buscar Ficha en la Nube</button>
+    </div>
+
+    <form id="formularioAfiliacion">
+        <div class="section-title">DATOS DE LA EMPRESA</div>
+        <div class="form-group">
+            <label for="nombreEmpresa">Nombre de Empresa:</label>
+            <input type="text" id="nombreEmpresa" required>
+        </div>
+        <div class="form-group">
+            <label for="rif">RIF Corporativo:</label>
+            <input type="text" id="rif" required>
+        </div>
+        <div class="form-group">
+            <label for="registroMercantil">Registro Mercantil:</label>
+            <input type="text" id="registroMercantil" required>
+        </div>
+
+        <div class="section-title">DOCUMENTOS DIGITALES (NUBE)</div>
+        <div class="form-group">
+            <label for="fileCedula">Foto de la Cédula:</label>
+            <div>
+                <input type="file" id="fileCedula" accept="image/*">
+                <div class="file-note">Permite abrir la cámara en vivo o seleccionar desde la galería.</div>
+                <div id="statusCedula"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="fileRif">Archivo del RIF:</label>
+            <div>
+                <input type="file" id="fileRif" accept=".pdf">
+                <div class="file-note">Debe ser estrictamente en formato PDF. Abre el gestor de documentos.</div>
+                <div id="statusRif"></div>
+            </div>
+        </div>
+
+        <div class="section-title">VERIFICACIÓN DE DOCUMENTOS INICIALES</div>
+        <label class="row-check"><input type="checkbox" id="cartaSolicitud"> <span>Carta de solicitud entregada</span></label>
+        <label class="row-check"><input type="checkbox" id="actaMiembros"> <span>Acta de miembros consignada</span></label>
+        <label class="row-check"><input type="checkbox" id="listadoCPC"> <span>Listado CPC adjunto</span></label>
+
+        <div class="section-title">CONTROL LEGAL Y ACTUALIZACIÓN</div>
+        <div class="form-group">
+            <label for="representantesLegales">Representantes y Cédulas:</label>
+            <textarea id="representantesLegales" placeholder="Ej: Nombre Apellido - V-12.345.678"></textarea>
+        </div>
+        <label class="row-check"><input type="checkbox" id="actaActualizada"> <span>Acta Constitutiva Actualizada</span></label>
+        <label class="row-check"><input type="checkbox" id="rifActualizado"> <span>RIF Político Actualizado</span></label>
+
+        <div class="section-title">REQUISITOS DE CIERRE</div>
+        <label class="row-check"><input type="checkbox" id="planillaBeneficiarios"> <span>Planilla de beneficiarios recibida</span></label>
+        <label class="row-check"><input type="checkbox" id="carpetaMarron"> <span>Carpeta marrón con etiqueta archivada</span></label>
+
+        <div class="btn-container">
+            <button type="button" id="btnGuardar" class="btn-green">💾 Guardar Cambios</button>
+            <button type="button" id="btnLimpiar" class="btn-gray">🔄 Limpiar Formulario</button>
+        </div>
+    </form>
+
+    <div class="section-title">DESCARGAS DISPONIBLES</div>
+    <div class="btn-container">
+        <a href="planilla.pdf" download="Planilla_Afiliacion_CPC.pdf" style="width: 100%; text-align: center; text-decoration: none;">
+            <button type="button" class="btn-blue">📥 Descargar Planilla Oficial (PDF)</button>
+        </a>
+    </div>
+</div>
+
+<!-- LOGICA DE CONTROL Y CONEXION -->
+<script type="module">
+    import { initializeApp } from "https://gstatic.com";
+    import { getDatabase, ref, set, get, child } from "https://gstatic.com";
+    import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://gstatic.com";
+
+    // CONTRASEÑA ASIGNADA (Puedes cambiarla aquí mismo en el Bloc de notas)
+    const CONTRASEÑA_CORRECTA = "campesinos2026";
+
+    // Validación de entrada
+    document.getElementById('btnIngresar').addEventListener('click', () => {
+        const inputClave = document.getElementById('campoClave').value;
+        if(inputClave === CONTRASEÑA_CORRECTA) {
+            document.getElementById('pantallaLogin').style.display = "none";
+            document.getElementById('sistemaPrincipal').style.display = "block";
+        } else {
+            alert("Contraseña incorrecta. Acceso denegado.");
+        }
+    });
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBrDX4SWQEd0wM",
+        authDomain: "://firebaseapp.com",
+        databaseURL: "https://firebaseio.com",
+        projectId: "sistema-pc-carabobo",
+        storageBucket: "sistema-pc-carabobo.firebasestorage.app",
+        messagingSenderId: "559128386152",
+        appId: "1:559128386152:web:d23826e19988b9e641f9dd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const storage = getStorage(app);
+
+    let urlCedulaExistente = "";
+    let urlRifExistente = "";
+
+    // PROCESO GUARDAR
+    document.getElementById('btnGuardar').addEventListener('click', async () => {
+        const rifId = document.getElementById('rif').value.trim().toUpperCase();
+if(!rifId) { alert("Por favor, introduce el RIF para guardar."); return; }const fileCedula = document.getElementById('fileCedula').files[0];const fileRif = document.getElementById('fileRif').files[0];document.getElementById('btnGuardar').disabled = true;document.getElementById('btnGuardar').innerText = "⏳ Subiendo archivos y guardando...";let urlCedula = urlCedulaExistente;let urlRif = urlRifExistente;try {if (fileCedula) {const storageRefCedula = sRef(storage, 'cedulas/' + rifId + '_' + fileCedula.name);const snapshotCedula = await uploadBytes(storageRefCedula, fileCedula);urlCedula = await getDownloadURL(snapshotCedula.ref);}if (fileRif) {const storageRefRif = sRef(storage, 'rifs/' + rifId + '_' + fileRif.name);const snapshotRif = await uploadBytes(storageRefRif, fileRif);urlRif = await getDownloadURL(snapshotRif.ref);
+}
+await set(ref(db, 'afiliados/' + rifId), {nombreEmpresa: document.getElementById('nombreEmpresa').value,registroMercantil: document.getElementById('registroMercantil').value,urlCedula: urlCedula,urlRif: urlRif,cartaSolicitud: document.getElementById('cartaSolicitud').checked,actaMiembros: document.getElementById('actaMiembros').checked,listadoCPC: document.getElementById('listadoCPC').checked,representantes: document.getElementById('representantesLegales').value,actaActualizada: document.getElementById('actaActualizada').checked,rifActualizado: document.getElementById('rifActualizado').checked,planillaBeneficiarios: document.getElementById('planillaBeneficiarios').checked,carpetaMarron: document.getElementById('carpetaMarron').checked});alert("¡Todo se guardó con éxito en la nube (Datos y Archivos)!");document.getElementById('formularioAfiliacion').reset();limpiarEstadoArchivos();} catch (error) {alert("Error en el proceso: " + error.message);} finally {document.getElementById('btnGuardar').disabled = false;document.getElementById('btnGuardar').innerText = "💾 Guardar Cambios";}});
+// PROCESO BUSCARdocument.getElementById('btnBuscar').addEventListener('click', () => {const searchRif = document.getElementById('buscarRIF').value.trim().toUpperCase();if(!searchRif) { alert("Escribe un RIF para realizar la búsqueda."); return; }limpiarEstadoArchivos();const dbRef = ref(db);get(child(dbRef, afiliados/${searchRif})).then((snapshot) => {if (snapshot.exists()) {const data = snapshot.val();document.getElementById('nombreEmpresa').value = data.nombreEmpresa || '';document.getElementById('rif').value = searchRif;document.getElementById('registroMercantil').value = data.registroMercantil || '';document.getElementById('cartaSolicitud').checked = data.cartaSolicitud || false;document.getElementById('actaMiembros').checked = data.actaMiembros || false;document.getElementById('listadoCPC').checked = data.listadoCPC || false;document.getElementById('representantesLegales').value = data.representantes || '';document.getElementById('actaActualizada').checked = data.actaActualizada || false;document.getElementById('rifActualizado').checked = data.rifActualizado || false;document.getElementById('planillaBeneficiarios').checked = data.planillaBeneficiarios || false;document.getElementById('carpetaMarron').checked = data.carpetaMarron || false;if(data.urlCedula) {urlCedulaExistente = data.urlCedula;document.getElementById('statusCedula').innerHTML = <a href="${data.urlCedula}" target="_blank" class="link-descarga">👁️ Ver Cédula guardada</a>;}if(data.urlRif) {urlRifExistente = data.urlRif;document.getElementById('statusRif').innerHTML = <a href="${data.urlRif}" target="_blank" class="link-descarga">📄 Ver RIF guardado (PDF)</a>;}
+alert("Ficha del afiliado y archivos extraídos con éxito.");} else {alert("No se encontró ninguna empresa con ese RIF.");}}).catch((error) => alert("Error al buscar: " + error.message));});document.getElementById('btnLimpiar').addEventListener('click', () => {document.getElementById('formularioAfiliacion').reset();document.getElementById('buscarRIF').value = '';limpiarEstadoArchivos();});function limpiarEstadoArchivos() {urlCedulaExistente = "";urlRifExistente = "";document.getElementById('statusCedula').innerHTML = "";document.getElementById('statusRif').innerHTML = "";}
