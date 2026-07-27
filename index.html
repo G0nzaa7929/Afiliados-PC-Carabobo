@@ -228,6 +228,43 @@
     // LIMPIAR
     document.getElementById('btnLimpiar').addEventListener('click', () => {document.getElementById('formularioAfiliacion').reset();document.getElementById('statusCedula').innerHTML = "";
     document.getElementById('statusRif').innerHTML = "";urlCedulaExistente = ""; urlRifExistente = "";});
+// 1. FUNCIÓN PARA LIMPIAR EL FORMULARIO
+document.getElementById('btnLimpiar').addEventListener('click', function() {
+    // Reemplaza 'idDeTuFormulario' por el ID real que le pusiste a tu etiqueta <form>
+    document.getElementById('idDeTuFormulario').reset();
+    alert("Formulario limpio con éxito");
+});
+
+// 2. FUNCIÓN PARA GUARDAR EN FIREBASE
+document.getElementById('btnGuardar').addEventListener('click', function() {
+    // Captura el RIF para usarlo como llave en Firebase
+    var rif = document.getElementById('rif').value.trim(); 
+    
+    if(rif === "") {
+        alert("Por favor, introduce el RIF de la empresa");
+        return;
+    }
+
+    // Aquí capturas los datos de tu formulario
+    var datosAfiliado = {
+        empresa: document.getElementById('nombreEmpresa').value,
+        rif: rif,
+        // Agrega aquí el resto de tus campos...
+        timestamp: new Date().toISOString()
+    };
+
+    // Guarda en Firebase Realtime Database (asumiendo que 'db' es tu variable de Firebase)
+    // Usamos el RIF como nodo para que la búsqueda sea inmediata después
+    db.ref('afiliados/' + rif).set(datosAfiliado)
+    .then(function() {
+        alert("¡Datos guardados exitosamente en la nube!");
+    })
+    .catch(function(error) {
+        console.error("Error al guardar: ", error);
+        alert("Error al guardar: " + error.message);
+    });
+});
+
     
 </script>
 </body>
