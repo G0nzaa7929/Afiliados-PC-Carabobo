@@ -3,330 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Afiliación - PC Carabobo</title>
+    <title>Sistema de Afiliación de Empresas - CPCC</title>
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
-        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .header-title { text-align: center; font-weight: bold; font-size: 13px; padding: 0 5px; line-height: 1.4; }
-        .header-logo { width: 55px; height: 55px; object-fit: contain; }
-        .section-title { background: #0056b3; color: white; padding: 8px; font-weight: bold; margin-top: 20px; border-radius: 4px; font-size: 14px; }
-        .form-group { margin: 15px 0; display: flex; flex-direction: column; }
-        label { font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        input[type="text"], textarea, input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; }
-        textarea { height: 80px; resize: vertical; }
-        .file-note { font-size: 12px; color: #666; margin-top: 4px; font-style: italic; }
-        .row-check { margin: 12px 0; display: flex; align-items: center; font-size: 14px; line-height: 1.3; }
-        .row-check input[type="checkbox"] { width: 22px; height: 22px; margin-right: 10px; cursor: pointer; flex-shrink: 0; }
-        .search-box { background: #eef7ff; padding: 15px; border: 1px solid #b6d4fe; margin-bottom: 15px; border-radius: 6px; }
-        .btn-container { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-        button { width: 100%; padding: 12px; font-weight: bold; font-size: 15px; cursor: pointer; border: none; border-radius: 4px; }
-        .btn-blue { background: #007bff; color: white; }
-        .btn-green { background: #28a745; color: white; }
-        .btn-gray { background: #6c757d; color: white; }
-        .link-descarga { display: inline-block; margin-top: 5px; color: #0056b3; font-weight: bold; text-decoration: none; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f0f2f5; color: #333; }
         
-        @media (min-width: 600px) {
-            body { padding: 20px; }
-            .container { padding: 25px; }
-            .header-title { font-size: 15px; }
-            .header-logo { width: 65px; height: 65px; }
-            .form-group { flex-direction: row; align-items: center; }
-            label { width: 200px; margin-bottom: 0; }
-            input[type="text"], input[type="file"] { width: 350px; }
-            .btn-container { flex-direction: row; justify-content: center; }
-            button { width: auto; padding: 10px 20px; }
-        }
+        /* Contenedor del Encabezado Oficial */
+        .header-institucional { display: flex; align-items: center; justify-content: space-between; max-width: 650px; margin: 0 auto 20px auto; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .logo-img { width: 75px; height: 75px; object-fit: contain; } /* Equivalente visual a escala 5x5 equilibrada en web */
+        .texto-header { text-align: center; flex: 1; font-weight: bold; font-size: 0.9em; line-height: 1.4; color: #1557b0; padding: 0 10px; }
+        
+        /* Contenedor del Formulario */
+        .container { max-width: 650px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 0 auto; }
+        h2 { color: #1a73e8; border-bottom: 2px solid #1a73e8; padding-bottom: 10px; margin-top: 0; text-align: center; }
+        h3 { color: #5f6368; margin-top: 20px; font-size: 1.1em; background: #f8f9fa; padding: 8px; border-left: 4px solid #1a73e8; }
+        label { font-weight: bold; display: block; margin-top: 12px; margin-bottom: 5px; }
+        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 60px; resize: none; }
+        .row-check { display: flex; align-items: center; background: #fcfcfc; padding: 10px; border: 1px solid #f1f3f4; border-radius: 4px; margin-bottom: 8px; }
+        .row-check input[type="checkbox"] { margin-right: 12px; transform: scale(1.2); cursor: pointer; }
+        .row-check label { margin: 0; font-weight: normal; cursor: pointer; }
+        .btn-group { margin-top: 25px; display: flex; gap: 10px; }
+        button { padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.95em; flex: 1; transition: background 0.2s; }
+        .btn-bus { background-color: #1a73e8; color: white; }
+        .btn-bus:hover { background-color: #1557b0; }
+        .btn-reg { background-color: #34a853; color: white; }
+        .btn-reg:hover { background-color: #2b8c44; }
+        .btn-act { background-color: #fbbc05; color: #202124; display: none; }
+        .btn-act:hover { background-color: #e5ad04; }
+        .btn-desc { background-color: #17a2b8; color: white; text-align: center; text-decoration: none; display: block; margin-top: 20px; padding: 12px; border-radius: 4px; font-weight: bold; }
+        .btn-desc:hover { background-color: #138496; }
+        hr { border: 0; border-top: 1px solid #dadce0; margin: 20px 0; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    
-    <!-- MEMBRETE FORMAL -->
-    <table class="header-table">
-        <tr>
-            <td style="width: 60px; text-align: left;"><img src="logo.jpg" alt="Logo L" class="header-logo"></td>
-            <td class="header-title">
-                JUNTA DIRECTIVA AD HOC DE LA FCBV<br>
-                CÁMARA DE PRODUCTORES Y CAMPESINOS DE CARABOBO<br>
-                SISTEMA DE CONTROL DE AFILIADOS
-            </td>
-            <td style="width: 60px; text-align: right;"><img src="logo2.jpg" alt="Logo R" class="header-logo"></td>
-        </tr>
-    </table>
-
-    <!-- BUSCADOR POR RIF -->
-    <div class="search-box">
-        <div class="form-group" style="margin: 0 0 10px 0;">
-            <label for="buscarRIF">Buscar por RIF:</label>
-            <input type="text" id="buscarRIF" placeholder="Ej: J-12345678-0">
-        </div>
-        <button type="button" id="btnBuscar" class="btn-blue">🔍 Buscar Ficha en la Nube</button>
+<!-- Encabezado Institucional Requerido -->
+<div class="header-institucional">
+    <img src="logo.jpg" alt="Logo Izquierdo" class="logo-img">
+    <div class="texto-header">
+        República Bolivariana de Venezuela<br>
+        Junta directiva Ad hoc de la Federación campesina Bolivariana de Venezuela FCBV<br>
+        Cámara de Productores y Campesinos de Carabobo
     </div>
+    <img src="logo2.jpg" alt="Logo Derecho" class="logo-img">
+</div>
 
-    <form id="formularioAfiliacion">
-        <!-- DATOS DE LA EMPRESA -->
-        <div class="section-title">DATOS DE LA EMPRESA</div>
-        <div class="form-group">
-            <label for="nombreEmpresa">Nombre de Empresa:</label>
-            <input type="text" id="nombreEmpresa" required>
+<div class="container">
+    <h2>Control de Afiliación</h2>
+    
+    <!-- Módulo de Búsqueda Rápida -->
+    <label for="buscar_rif">Buscar Empresa Registrada (Introducir RIF):</label>
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" id="buscar_rif" placeholder="Ej: J-12345678-0">
+        <button type="button" class="btn-bus" style="flex: 0 0 140px;" onclick="buscarEmpresa()">Buscar / Editar</button>
+    </div>
+    
+    <hr>
+
+    <!-- Formulario Principal -->
+    <form id="formAfiliacion">
+        
+        <h3>1. Datos Básicos de la Organización</h3>
+        
+        <label for="nombre_empresa">Nombre de la Empresa:</label>
+        <input type="text" id="nombre_empresa" required placeholder="Razón social completa">
+        
+        <label for="rif_empresa">RIF:</label>
+        <input type="text" id="rif_empresa" required placeholder="Ej: J-12345678-0">
+        
+        <label for="registro_empresa">Registro:</label>
+        <input type="text" id="registro_empresa" required placeholder="Tomo, Número, Registro Mercantil...">
+
+        <h3>2. Documentación Inicial (Casillas de Verificación)</h3>
+        
+        <div class="row-check">
+            <input type="checkbox" id="chk_carta">
+            <label for="chk_carta">Carta de solicitud formal suscrita por los representantes legales de la organización.</label>
         </div>
-        <div class="form-group">
-            <label for="rif">RIF Corporativo:</label>
-            <input type="text" id="rif" required>
+        
+        <div class="row-check">
+            <input type="checkbox" id="chk_acta_miembros">
+            <label for="chk_acta_miembros">Acta de registro de miembros autorizados para participar en la cámara.</label>
         </div>
-        <div class="form-group">
-            <label for="registroMercantil">Registro Mercantil:</label>
-            <input type="text" id="registroMercantil" required>
+        
+        <div class="row-check">
+            <input type="checkbox" id="chk_listado_cpc">
+            <label for="chk_listado_cpc">Listado de miembros según el formato solicitado por CPC.</label>
         </div>
 
-        <!-- DOCUMENTOS ADJUNTOS -->
-        <div class="section-title">DOCUMENTOS DIGITALES (NUBE)</div>
-        <div class="form-group">
-            <label for="fileCedula">Foto de la Cédula:</label>
-            <div>
-                <input type="file" id="fileCedula" accept="image/*">
-                <div class="file-note">Abre la cámara o galería en celulares.</div>
-                <div id="statusCedula"></div>
-            </div>
+        <h3>3. Datos de Representación y Estatus Legal</h3>
+        
+        <label for="representantes_cedulas">Representantes y Cédulas:</label>
+        <textarea id="representantes_cedulas" placeholder="Ej: Juan Pérez V-12.345.678, María Gómez V-9.876.543..."></textarea>
+        
+        <div class="row-check" style="margin-top: 15px;">
+            <input type="checkbox" id="chk_acta_actualizada">
+            <label for="chk_acta_actualizada"><b>Acta constitutiva</b> (Marcar si está Actualizada)</label>
         </div>
-        <div class="form-group">
-            <label for="fileRif">Archivo del RIF:</label>
-            <div>
-                <input type="file" id="fileRif" accept=".pdf">
-                <div class="file-note">Debe ser en formato PDF. Abre el gestor de archivos.</div>
-                <div id="statusRif"></div>
-            </div>
+        
+        <div class="row-check">
+            <input type="checkbox" id="chk_rif_actualizado">
+            <label for="chk_rif_actualizado"><b>RIF</b> (Marcar si está Actualizado)</label>
+        </div>
+        
+        <div class="row-check">
+            <input type="checkbox" id="chk_planilla_beneficiarios">
+            <label for="chk_planilla_beneficiarios">Planilla para inscripción de los miembros de su organización para los beneficiarios.</label>
+        </div>
+        
+        <div class="row-check">
+            <input type="checkbox" id="chk_carpeta_marron">
+            <label for="chk_carpeta_marron">Carpeta marrón con etiqueta.</label>
         </div>
 
-        <div class="section-title">VERIFICACIÓN DE DOCUMENTOS INICIALES</div>
-        <label class="row-check"><input type="checkbox" id="cartaSolicitud"> <span>Carta de solicitud entregada</span></label>
-        <label class="row-check"><input type="checkbox" id="actaMiembros"> <span>Acta de miembros consignada</span></label>
-        <label class="row-check"><input type="checkbox" id="listadoCPC"> <span>Listado CPC adjunto</span></label>
-
-        <div class="section-title">CONTROL LEGAL Y ACTUALIZACIÓN</div>
-        <div class="form-group">
-            <label for="representantesLegales">Representantes y Cédulas:</label>
-            <textarea id="representantesLegales" placeholder="Ej: Nombre Apellido - V-12.345.678"></textarea>
-        </div>
-        <label class="row-check"><input type="checkbox" id="actaActualizada"> <span>Acta Constitutiva Actualizada</span></label>
-        <label class="row-check"><input type="checkbox" id="rifActualizado"> <span>RIF Político Actualizado</span></label>
-
-        <div class="section-title">REQUISITOS DE CIERRE</div>
-        <label class="row-check"><input type="checkbox" id="planillaBeneficiarios"> <span>Planilla de beneficiarios recibida</span></label>
-        <label class="row-check"><input type="checkbox" id="carpetaMarron"> <span>Carpeta marrón con etiqueta archivada</span></label>
-
-        <!-- BOTONES DE ACCIÓN -->
-        <div class="btn-container">
-            <button type="button" id="btnGuardar" class="btn-green">💾 Guardar Cambios</button>
-            <button type="button" id="btnLimpiar" class="btn-gray">🔄 Limpiar Formulario</button>
+        <!-- Botones Dinámicos de Control -->
+        <div class="btn-group">
+            <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa()">Registrar Nueva Afiliación</button>
+            <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarEmpresa()">Guardar Cambios (Actualizar Documentos)</button>
         </div>
     </form>
 
-    <!-- SISTEMA DE DESCARGA LOCAL -->
-    <div class="section-title">DESCARGAS DISPONIBLES</div>
-    <div class="btn-container">
-        <a href="planilla.pdf" download="Planilla_Afiliacion_CPC.pdf" style="width: 100%; text-align: center; text-decoration: none;">
-            <button type="button" class="btn-blue">📥 Descargar Planilla Oficial (PDF)</button>
-        </a>
-    </div>
-
+    <!-- Enlace de descarga de Planilla Base en PDF -->
+    <a href="planilla.pdf" download class="btn-desc">📥 Descargar Planilla de Inscripción para Beneficiarios</a>
 </div>
 
-<!-- ENLACES DE FIREBASE CDN TRADICIONAL -->
-<script src="https://gstatic.com"></script>
+<!-- Enlaces de Firebase oficiales compatibles con GitHub Pages -->
 <script src="https://gstatic.com"></script>
 <script src="https://gstatic.com"></script>
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
+    // Tu código JavaScript de base de datos se conectará aquí abajo
+    // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-    // 1. CONTROL DEL BOTÓN LIMPIAR
-    const btnLimpiar = document.getElementById('btnLimpiar');
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', () => {
-            const formulario = document.querySelector('form');
-            if (formulario) {
-                formulario.reset();
-                alert("Formulario vaciado con éxito");
-            } else {
-                alert("No se encontró ningún formulario para limpiar");
-            }
-        });
-    }
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBraDX4SWQEd0wM",
+  authDomain: "sistema-pc-carabobo.firebaseapp.com",
+  databaseURL: "https://sistema-pc-carabobo-default-rtdb.firebaseio.com",
+  projectId: "sistema-pc-carabobo",
+  storageBucket: "sistema-pc-carabobo.firebasestorage.app",
+  messagingSenderId: "559128386152",
+  appId: "1:559128386152:web:d23826e19988b9e641f9dd"
+};
 
-    // 2. CONTROL DEL BOTÓN GUARDAR
-    const btnGuardar = document.getElementById('btnGuardar');
-    if (btnGuardar) {
-        btnGuardar.addEventListener('click', () => {
-            
-            // Buscamos el campo RIF de forma inteligente (por ID o por su etiqueta de texto)
-            let campoRif = document.getElementById('rif') || 
-                           document.getElementById('txtRif') || 
-                           document.querySelector('input[type="text"]'); // Agarra la primera casilla si falla lo demás
-
-            if (!campoRif || campoRif.value.trim() === "") {
-                alert("Por favor, escribe la serie de números (RIF o Cédula) antes de guardar.");
-                return;
-            }
-
-            const serieNumeros = campoRif.value.trim();
-
-            // Creamos un paquete de datos básico para probar la nube
-            const datosAEnviar = {
-                identificador: serieNumeros,
-                fechaRegistro: new Date().toLocaleString(),
-                estatus: "Activo"
-            };
-
-            // Intentamos guardar usando esa serie de números como la llave en Firebase
-            // (Asegúrate de que tu variable de base de datos se llame 'db')
-            if (typeof db !== 'undefined') {
-                db.ref('afiliados/' + serieNumeros).set(datosAEnviar)
-                .then(() => {
-                    alert("¡Excelente! Los números " + serieNumeros + " se guardaron en Firebase.");
-                })
-                .catch((error) => {
-                    alert("Firebase rechazó los números. Error: " + error.message);
-                });
-            } else {
-                alert("Error técnico: La conexión con Firebase no está cargada en esta página.");
-            }
-        });
-    }
-});
-    
-<script>
-    // Credenciales de tu proyecto Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBrDX4SWQEd0wM",
-        authDomain: "://firebaseapp.com",
-        databaseURL: "https://firebaseio.com",
-        projectId: "sistema-pc-carabobo",
-        storageBucket: "sistema-pc-carabobo.firebasestorage.app",
-        messagingSenderId: "559128386152",
-        appId: "1:559128386152:web:d23826e19988b9e641f9dd"
-    };
-    
-    // Inicializar Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const storage = firebase.storage();
-
-    let urlCedulaExistente = "";
-    let urlRifExistente = "";
-
-    // PROCESO GUARDAR
-    document.getElementById('btnGuardar').addEventListener('click', async () => {
-        const rifId = document.getElementById('rif').value.trim().toUpperCase();
-        if(!rifId) { alert("Por favor, introduce el RIF para guardar."); return; }
-
-        const fileCedula = document.getElementById('fileCedula').files[0];
-        const fileRif = document.getElementById('fileRif').files[0];
-
-        document.getElementById('btnGuardar').disabled = true;
-        document.getElementById('btnGuardar').innerText = "⏳ Guardando cambios...";
-
-        let urlCedula = urlCedulaExistente;
-        let urlRif = urlRifExistente;
-
-        try {
-            if (fileCedula) {
-                const refC = storage.ref('cedulas/' + rifId + '_' + fileCedula.name);
-                const snapC = await refC.put(fileCedula);
-                urlCedula = await snapC.ref.getDownloadURL();
-            }
-
-            if (fileRif) {
-                const refR = storage.ref('rifs/' + rifId + '_' + fileRif.name);
-                const snapR = await refR.put(fileRif);
-                urlRif = await snapR.ref.getDownloadURL();
-            }
-
-            await db.ref('afiliados/' + rifId).set({
-                nombreEmpresa: document.getElementById('nombreEmpresa').value,
-                registroMercantil: document.getElementById('registroMercantil').value,
-                urlCedula: urlCedula,
-                urlRif: urlRif,
-                cartaSolicitud: document.getElementById('cartaSolicitud').checked,
-                actaMiembros: document.getElementById('actaMiembros').checked,
-                listadoCPC: document.getElementById('listadoCPC').checked,
-                representantes: document.getElementById('representantesLegales').value,actaActualizada: document.getElementById('actaActualizada').checked,
-                rifActualizado: document.getElementById('rifActualizado').checked,planillaBeneficiarios: document.getElementById('planillaBeneficiarios').checked,
-                carpetaMarron: document.getElementById('carpetaMarron').checked});alert("¡Guardado con éxito en la nube!");
-                document.getElementById('formularioAfiliacion').reset();
-                document.getElementById('statusCedula').innerHTML = "";
-                document.getElementById('statusRif').innerHTML = "";urlCedulaExistente = ""; 
-                urlRifExistente = "";} catch (error) {alert("Error: " + error.message);} finally {document.getElementById('btnGuardar').disabled = false;
-                document.getElementById('btnGuardar').innerText=
-            "💾 Guardar Cambios"
-    }
-    });
-    
-    // PROCESO BUSCAR
-    document.getElementById('btnBuscar').addEventListener('click', () => {const searchRif = document.getElementById('buscarRIF').value.trim().toUpperCase();if(!searchRif) { alert("Escribe un RIF."); return; }
-    db.ref('afiliados/' + searchRif).once('value').then((snapshot) => {if (snapshot.exists()) {const data = snapshot.val();
-    document.getElementById('nombreEmpresa').value = data.nombreEmpresa || '';  
-    document.getElementById('rif').value = searchRif;document.getElementById('registroMercantil').value = data.registroMercantil || '';
-    document.getElementById('cartaSolicitud').checked = data.cartaSolicitud || false;
-    document.getElementById('actaMiembros').checked = data.actaMiembros || false;
-    document.getElementById('listadoCPC').checked = data.listadoCPC || false;
-    document.getElementById('representantesLegales').value = data.representantes || '';
-    document.getElementById('actaActualizada').checked = data.actaActualizada || false;
-    document.getElementById('rifActualizado').checked = data.rifActualizado || false;
-    document.getElementById('planillaBeneficiarios').checked = data.planillaBeneficiarios || false;
-    document.getElementById('carpetaMarron').checked = data.carpetaMarron || false;
-    if(data.urlCedula) {urlCedulaExistente = data.urlCedula;
-    document.getElementById('statusCedula').innerHTML = <a href="${data.urlCedula}" target="_blank" class="link-descarga">👁️ Ver Cédula</a>; }
-    if(data.urlRif) {urlRifExistente = data.urlRif;document.getElementById('statusRif').innerHTML = <a href="${data.urlRif}" target="_blank" class="link-descarga">📄 Ver RIF (PDF)</a>;}alert("Ficha extraída.");
-    } else {alert("No registrado.");}});});
-    
-    // LIMPIAR
-    document.getElementById('btnLimpiar').addEventListener('click', () => {document.getElementById('formularioAfiliacion').reset();document.getElementById('statusCedula').innerHTML = "";
-    document.getElementById('statusRif').innerHTML = "";urlCedulaExistente = ""; urlRifExistente = "";});
-// 1. FUNCIÓN PARA LIMPIAR EL FORMULARIO
-document.getElementById('btnLimpiar').addEventListener('click', function() {
-    // Reemplaza 'idDeTuFormulario' por el ID real que le pusiste a tu etiqueta <form>
-    document.getElementById('idDeTuFormulario').reset();
-    alert("Formulario limpio con éxito");
-});
-
-// 2. FUNCIÓN PARA GUARDAR EN FIREBASE
-document.getElementById('btnGuardar').addEventListener('click', function() {
-    // Captura el RIF para usarlo como llave en Firebase
-    var rif = document.getElementById('rif').value.trim(); 
-    
-    if(rif === "") {
-        alert("Por favor, introduce el RIF de la empresa");
-        return;
-    }
-
-    // Aquí capturas los datos de tu formulario
-    var datosAfiliado = {
-        empresa: document.getElementById('nombreEmpresa').value,
-        rif: rif,
-        // Agrega aquí el resto de tus campos...
-        timestamp: new Date().toISOString()
-    };
-
-    // Guarda en Firebase Realtime Database (asumiendo que 'db' es tu variable de Firebase)
-    // Usamos el RIF como nodo para que la búsqueda sea inmediata después
-    db.ref('afiliados/' + rif).set(datosAfiliado)
-    .then(function() {
-        alert("¡Datos guardados exitosamente en la nube!");
-    })
-    .catch(function(error) {
-        console.error("Error al guardar: ", error);
-        alert("Error al guardar: " + error.message);
-    });
-});
-
-<button type="button" id="btnGuardar">Guardar Cambios</button>
-<button type="button" id="btnLimpiar">Limpiar Formulario</button>
-
-    
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 </script>
+
 </body>
 </html>
