@@ -115,14 +115,6 @@
             <input type="checkbox" id="chk_carpeta_marron">
             <label for="chk_carpeta_marron">Carpeta marrón con etiqueta.</label>
         </div>
-
-        <!-- Botones Dinámicos de Control -->
-        <div class="btn-group">
-            <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa()">Registrar Nueva Afiliación</button>
-            <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarEmpresa()">Guardar Cambios (Actualizar Documentos)</button>
-        </div>
-    </form>
-    
     <h2>Subir Documentos</h2>
 
     <!-- Botón 1: Cédula (Cámara o Galería) -->
@@ -163,6 +155,14 @@
 <!-- Enlaces de Firebase oficiales compatibles con GitHub Pages -->
 <script src="https://gstatic.com"></script>
 <script src="https://gstatic.com"></script>
+
+    
+        <!-- Botones Dinámicos de Control -->
+        <div class="btn-group">
+            <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa()">Registrar Nueva Afiliación</button>
+            <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarEmpresa()">Guardar Cambios (Actualizar Documentos)</button>
+        </div>
+    </form>
   
 <!-- Enlace de descarga de Planilla Base en PDF -->
 <a href="planilla.pdf" download class="btn-desc">📥 Descargar Planilla de Inscripción para Beneficiarios</a>
@@ -171,27 +171,176 @@
 <div class="container">
     
 <script>
-    // Tu código JavaScript de base de datos se conectará aquí abajo
-    // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+    
+// 1. CONFIGURACIÓN DE TU APP (Tus credenciales reales)
 const firebaseConfig = {
-  apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBraDX4SWQEd0wM",
-  authDomain: "sistema-pc-carabobo.firebaseapp.com",
-  databaseURL: "https://sistema-pc-carabobo-default-rtdb.firebaseio.com",
-  projectId: "sistema-pc-carabobo",
-  storageBucket: "sistema-pc-carabobo.firebasestorage.app",
-  messagingSenderId: "559128386152",
-  appId: "1:559128386152:web:d23826e19988b9e641f9dd"
+    apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBRaDX4SWQEdOwM",
+    authDomain: "://firebaseapp.com",
+    databaseURL: "https://firebaseio.com",
+    projectId: "sistema-pc-carabobo",
+    storageBucket: "sistema-pc-carabobo.firebasestorage.app",
+    messagingSenderId: "559128386152",
+    appId: "1:559128386152:web:d23826e19988b9e641f9dd"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-    let urlCedulaExistente = "";
-    let urlRifExistente = "";
+// 2. INICIALIZACIÓN DE SERVICIOS (Sintaxis clásica sin gstatic)
+firebase.initializeApp(firebaseConfig);
+const storage = firebase.storage();
+const database = firebase.database();
+
+// 3. VARIABLES GLOBALES PARA CONTROL DE DATOS
+let idEmpresaSeleccionada = "";
+let urlCedulaExistente = "";
+let urlRifExistente = "";
+
+// 4. REFERENCIAS A LOS ELEMENTOS DE TU PÁGINA
+const inputCedula = document.getElementById('input-cedula');
+const inputRif = document.getElementById('input-rif');
+const nameCedula = document.getElementById('name-cedula');
+const nameRif = document.getElementById('name-rif');
+
+// 5. CONTROLADOR PARA SUBIR CÉDULA
+if (inputCedula) {
+    inputCedula.addEventListener('change', function(e) {
+        const archivo = e.target.files[0];
+        if (archivo) {
+            nameCedula.textContent = "Subiendo: " + archivo.name;
+            nameCedula.style.color = "#ffa500";
+            
+            const ruta = 'cedulas/' + Date.now() + '_' + archivo.name;
+            const tarea = storage.ref(ruta).put(archivo);
+            
+            tarea.on('state_changed', null, 
+                function(error) { console.error(error); alert("Error al subir cédula"); }, 
+                function() {
+                    tarea.snapshot.ref.getDownloadURL().then(function(url) {
+                        urlCedulaExistente = url;
+                        nameCedula.textContent = archivo.name;
+                        nameCedula.style.color = "#00ff00";
+                    });
+                }
+            );
+        }
+    });
+}
+
+// 6. CONTROLADOR PARA SUBIR RIF
+if (inputRif) {
+    inputRif.addEventListener('change', function(e) {
+        const archivo = e.target.files[0];
+        if (archivo) {
+            nameRif.textContent = "Subiendo: " + archivo.name;
+            nameRif.style.color = "#ffa500";
+            
+            const ruta = 'rifs/' + Date.now() + '_' + archivo.name;
+            const tarea = storage.ref(ruta).put(archivo);
+            
+            tarea.on('state_changed', null, 
+                function(error) { console.error(error); alert("Error al subir RIF"); }, 
+                function() {
+                    tarea.snapshot.ref.getDownloadURL().then(function(url) {
+                        urlRifExistente = url;
+                        nameRif.textContent = archivo.name;
+                        nameRif.style.color = "#00ff00";
+                    });
+                }
+            );
+        }
+    });
+}
+
+// 7. FUNCIÓN DEL BOTÓN: BUSCAR / EDITAR EMPRESA
+function buscarEmpresa() {
+    const rifABuscar = document.getElementById('buscar_rif').value.trim();
+    if (!rifABuscar) {
+        alert("Por favor, introduce un RIF para buscar.");
+        return;
+    }
+    
+    database.ref('afiliados').orderByChild('rif').equalTo(rifABuscar).once('value')
+    .then(function(snapshot) {
+        if (snapshot.exists()) {
+            const id = Object.keys(snapshot.val())[0];
+            const datosEmpresa = snapshot.val()[id];
+            idEmpresaSeleccionada = id;
+            
+            if (document.getElementById('nombre_empresa')) {
+                document.getElementById('nombre_empresa').value = datosEmpresa.nombre || "";
+            }
+            if (document.getElementById('rif')) {
+                document.getElementById('rif').value = datosEmpresa.rif || "";
+            }
+            
+            nameCedula.textContent = datosEmpresa.cedulaUrl ? "Ya tiene cédula cargada" : "Ningún archivo seleccionado";
+            nameRif.textContent = datosEmpresa.rifUrl ? "Ya tiene RIF cargado" : "Ningún archivo seleccionado";
+            nameCedula.style.color = "";
+            nameRif.style.color = "";
+            alert("Empresa encontrada y cargada.");
+        } else {
+            alert("No se encontró ninguna empresa con ese RIF.");
+            idEmpresaSeleccionada = "";
+        }
+    }).catch(function(error) { console.error(error); });
+}
+
+// 8. FUNCIÓN DEL BOTÓN: REGISTRAR NUEVA AFILIACIÓN
+function registrarEmpresa() {
+    const inputRifFormulario = document.getElementById('rif') || document.getElementById('rif_empresa');
+    const inputNombreFormulario = document.getElementById('nombre_empresa');
+    const rifValor = inputRifFormulario ? inputRifFormulario.value.trim() : "";
+    const nombreValor = inputNombreFormulario ? inputNombreFormulario.value.trim() : "";
+
+    if (!rifValor || !nombreValor) {
+        alert("Por favor, completa el RIF y el Nombre de la Empresa.");
+        return;
+    }
+    if (!urlCedulaExistente || !urlRifExistente) {
+        alert("Por favor, espera a que los documentos terminen de cargarse en verde.");
+        return;
+    }
+
+    const nuevaEmpresaRef = database.ref('afiliados').push();
+    nuevaEmpresaRef.set({
+        rif: rifValor,
+        nombre: nombreValor,
+        cedulaUrl: urlCedulaExistente,
+        rifUrl: urlRifExistente,
+        fechaRegistro: new Date().toISOString()
+    })
+    .then(function() {
+        alert("¡Empresa registrada exitosamente!");
+        if (document.getElementById('formaAfiliacion')) document.getElementById('formaAfiliacion').reset();
+        urlCedulaExistente = "";
+        urlRifExistente = "";
+        nameCedula.textContent = "Ningún archivo seleccionado";
+        nameRif.textContent = "Ningún archivo seleccionado";
+        nameCedula.style.color = "";
+        nameRif.style.color = "";
+    }).catch(function(error) { console.error(error); });
+}
+
+// 9. FUNCIÓN DEL BOTÓN: GUARDAR CAMBIOS (ACTUALIZAR DOCUMENTOS)
+function actualizarEmpresa() {
+    if (!idEmpresaSeleccionada) {
+        alert("Primero debes buscar una empresa por su RIF para poder actualizarla.");
+        return;
+    }
+    const actualizaciones = {};
+    if (urlCedulaExistente) actualizaciones['cedulaUrl'] = urlCedulaExistente;
+    if (urlRifExistente) actualizaciones['rifUrl'] = urlRifExistente;
+
+    if (Object.keys(actualizaciones).length === 0) {
+        alert("No has seleccionado ningún documento nuevo para actualizar.");
+        return;
+    }
+
+    database.ref('afiliados/' + idEmpresaSeleccionada).update(actualizaciones)
+    .then(function() {
+        alert("¡Documentos actualizados correctamente!");
+        urlCedulaExistente = "";
+        urlRifExistente = "";
+    }).catch(function(error) { console.error(error); });
+}
 
 </script>
 
