@@ -139,6 +139,7 @@
   </div>
 
   <script>
+      
     // Mostrar el nombre del archivo de la Cédula al seleccionarlo
     document.getElementById('input-cedula').addEventListener('change', function(e) {
       const fileName = e.target.files[0] ? e.target.files[0].name : 'Ningún archivo seleccionado';
@@ -151,13 +152,8 @@
       document.getElementById('name-rif').textContent = 'Seleccionado: ' + fileName;
     });
   </script>
-    
-<!-- Enlaces de Firebase oficiales compatibles con GitHub Pages -->
-<script src="https://gstatic.com"></script>
-<script src="https://gstatic.com"></script>
 
-    
-        <!-- Botones Dinámicos de Control -->
+            <!-- Botones Dinámicos de Control -->
         <div class="btn-group">
             <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa()">Registrar Nueva Afiliación</button>
             <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarEmpresa()">Guardar Cambios (Actualizar Documentos)</button>
@@ -172,7 +168,12 @@
     
 <script>
     
-// 1. CONFIGURACIÓN DE TU APP (Tus credenciales reales)
+// 1. IMPORTACIONES DESDE EL SERVIDOR ALTERNATIVO (SIN GSTATIC)
+import { initializeApp } from "https://jsdelivr.net";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://jsdelivr.net";
+import { getDatabase, ref as dbRef, push, set, query, orderByChild, equalTo, get, update } from "https://jsdelivr.net";
+
+// 2. CONFIGURACIÓN DE TU APP (Tus credenciales reales)
 const firebaseConfig = {
     apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBRaDX4SWQEdOwM",
     authDomain: "://firebaseapp.com",
@@ -183,82 +184,81 @@ const firebaseConfig = {
     appId: "1:559128386152:web:d23826e19988b9e641f9dd"
 };
 
-// 2. INICIALIZACIÓN DE SERVICIOS (Sintaxis clásica sin gstatic)
-firebase.initializeApp(firebaseConfig);
-const storage = firebase.storage();
-const database = firebase.database();
+// 3. INICIALIZACIÓN DE SERVICIOS
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+const database = getDatabase(app);
 
-// 3. VARIABLES GLOBALES PARA CONTROL DE DATOS
+// 4. VARIABLES GLOBALES DE CONTROL
 let idEmpresaSeleccionada = "";
 let urlCedulaExistente = "";
 let urlRifExistente = "";
 
-// 4. REFERENCIAS A LOS ELEMENTOS DE TU PÁGINA
+// 5. REFERENCIAS A LOS ELEMENTOS DE TU PÁGINA
 const inputCedula = document.getElementById('input-cedula');
 const inputRif = document.getElementById('input-rif');
 const nameCedula = document.getElementById('name-cedula');
 const nameRif = document.getElementById('name-rif');
 
-// 5. CONTROLADOR PARA SUBIR CÉDULA
+// 6. CONTROLADOR DE ARCHIVO: CÉDULA
 if (inputCedula) {
-    inputCedula.addEventListener('change', function(e) {
+    inputCedula.addEventListener('change', async (e) => {
         const archivo = e.target.files[0];
         if (archivo) {
             nameCedula.textContent = "Subiendo: " + archivo.name;
             nameCedula.style.color = "#ffa500";
-            
-            const ruta = 'cedulas/' + Date.now() + '_' + archivo.name;
-            const tarea = storage.ref(ruta).put(archivo);
-            
-            tarea.on('state_changed', null, 
-                function(error) { console.error(error); alert("Error al subir cédula"); }, 
-                function() {
-                    tarea.snapshot.ref.getDownloadURL().then(function(url) {
-                        urlCedulaExistente = url;
-                        nameCedula.textContent = archivo.name;
-                        nameCedula.style.color = "#00ff00";
-                    });
-                }
-            );
+            urlCedulaExistente = await subirArchivoAFirebase(archivo, 'cedulas');
+            if (urlCedulaExistente) {
+                nameCedula.textContent = archivo.name;
+                nameCedula.style.color = "#00ff00";
+            }
         }
     });
 }
 
-// 6. CONTROLADOR PARA SUBIR RIF
+// 7. CONTROLADOR DE ARCHIVO: RIF
 if (inputRif) {
-    inputRif.addEventListener('change', function(e) {
+    inputRif.addEventListener('change', async (e) => {
         const archivo = e.target.files[0];
         if (archivo) {
             nameRif.textContent = "Subiendo: " + archivo.name;
             nameRif.style.color = "#ffa500";
-            
-            const ruta = 'rifs/' + Date.now() + '_' + archivo.name;
-            const tarea = storage.ref(ruta).put(archivo);
-            
-            tarea.on('state_changed', null, 
-                function(error) { console.error(error); alert("Error al subir RIF"); }, 
-                function() {
-                    tarea.snapshot.ref.getDownloadURL().then(function(url) {
-                        urlRifExistente = url;
-                        nameRif.textContent = archivo.name;
-                        nameRif.style.color = "#00ff00";
-                    });
-                }
-            );
+            urlRifExistente = await subirArchivoAFirebase(archivo, 'rifs');
+            if (urlRifExistente) {
+                nameRif.textContent = archivo.name;
+                nameRif.style.color = "#00ff00";
+            }
         }
     });
 }
 
-// 7. FUNCIÓN DEL BOTÓN: BUSCAR / EDITAR EMPRESA
-function buscarEmpresa() {
+// 8. FUNCIÓN INTERNA PARA SUBIR A STORAGE
+async function subirArchivoAFirebase(archivo, carpeta) {
+    try {
+        const ruta = `${carpeta}/${Date.now()}_${archivo.name}`;
+        const referencia = storageRef(storage, ruta);
+        const snapshot = await uploadBytes(referencia, archivo);
+        return await getDownloadURL(snapshot.ref);
+    } catch (error) {
+        console.error("Error en Storage:", error);
+        alert("No se pudo cargar el documento.");
+        return "";
+    }
+}
+
+// =========================================================================
+// 9. FUNCIONES GLOBALES CONECTADAS A TUS BOTONES ONCLICK
+// =========================================================================
+
+// Botón Buscar / Editar
+window.buscarEmpresa = function() {
     const rifABuscar = document.getElementById('buscar_rif').value.trim();
     if (!rifABuscar) {
         alert("Por favor, introduce un RIF para buscar.");
         return;
     }
-    
-    database.ref('afiliados').orderByChild('rif').equalTo(rifABuscar).once('value')
-    .then(function(snapshot) {
+    const consulta = query(dbRef(database, 'afiliados'), orderByChild('rif'), equalTo(rifABuscar));
+    get(consulta).then((snapshot) => {
         if (snapshot.exists()) {
             const id = Object.keys(snapshot.val())[0];
             const datosEmpresa = snapshot.val()[id];
@@ -280,12 +280,12 @@ function buscarEmpresa() {
             alert("No se encontró ninguna empresa con ese RIF.");
             idEmpresaSeleccionada = "";
         }
-    }).catch(function(error) { console.error(error); });
+    }).catch((error) => console.error("Error al buscar:", error));
 }
 
-// 8. FUNCIÓN DEL BOTÓN: REGISTRAR NUEVA AFILIACIÓN
-function registrarEmpresa() {
-    const inputRifFormulario = document.getElementById('rif') || document.getElementById('rif_empresa');
+// Botón Registrar Nueva Afiliación
+window.registrarEmpresa = function() {
+    const inputRifFormulario = document.getElementById('rif') || document.getElementById('rif_empresa') || document.getElementById('buscar_rif');
     const inputNombreFormulario = document.getElementById('nombre_empresa');
     const rifValor = inputRifFormulario ? inputRifFormulario.value.trim() : "";
     const nombreValor = inputNombreFormulario ? inputNombreFormulario.value.trim() : "";
@@ -295,19 +295,19 @@ function registrarEmpresa() {
         return;
     }
     if (!urlCedulaExistente || !urlRifExistente) {
-        alert("Por favor, espera a que los documentos terminen de cargarse en verde.");
+        alert("Por favor, espera a que los documentos terminen de cargarse.");
         return;
     }
 
-    const nuevaEmpresaRef = database.ref('afiliados').push();
-    nuevaEmpresaRef.set({
+    const nuevaEmpresaRef = push(dbRef(database, 'afiliados'));
+    set(nuevaEmpresaRef, {
         rif: rifValor,
         nombre: nombreValor,
         cedulaUrl: urlCedulaExistente,
         rifUrl: urlRifExistente,
         fechaRegistro: new Date().toISOString()
     })
-    .then(function() {
+    .then(() => {
         alert("¡Empresa registrada exitosamente!");
         if (document.getElementById('formaAfiliacion')) document.getElementById('formaAfiliacion').reset();
         urlCedulaExistente = "";
@@ -316,31 +316,30 @@ function registrarEmpresa() {
         nameRif.textContent = "Ningún archivo seleccionado";
         nameCedula.style.color = "";
         nameRif.style.color = "";
-    }).catch(function(error) { console.error(error); });
+    }).catch((error) => console.error("Error al registrar:", error));
 }
 
-// 9. FUNCIÓN DEL BOTÓN: GUARDAR CAMBIOS (ACTUALIZAR DOCUMENTOS)
-function actualizarEmpresa() {
+// Botón Guardar Cambios
+window.actualizarEmpresa = function() {
     if (!idEmpresaSeleccionada) {
         alert("Primero debes buscar una empresa por su RIF para poder actualizarla.");
         return;
     }
     const actualizaciones = {};
-    if (urlCedulaExistente) actualizaciones['cedulaUrl'] = urlCedulaExistente;
-    if (urlRifExistente) actualizaciones['rifUrl'] = urlRifExistente;
+    if (urlCedulaExistente) actualizaciones[`afiliados/${idEmpresaSeleccionada}/cedulaUrl`] = urlCedulaExistente;
+    if (urlRifExistente) actualizaciones[`afiliados/${idEmpresaSeleccionada}/rifUrl`] = urlRifExistente;
 
     if (Object.keys(actualizaciones).length === 0) {
         alert("No has seleccionado ningún documento nuevo para actualizar.");
         return;
     }
 
-    database.ref('afiliados/' + idEmpresaSeleccionada).update(actualizaciones)
-    .then(function() {
+    update(dbRef(database), actualizaciones).then(() => {
         alert("¡Documentos actualizados correctamente!");
         urlCedulaExistente = "";
         urlRifExistente = "";
-    }).catch(function(error) { console.error(error); });
-}
+    }).catch((error) => console.error("Error al actualizar:", error));
+}    
 
 </script>
 
