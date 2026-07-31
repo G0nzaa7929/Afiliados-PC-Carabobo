@@ -200,7 +200,8 @@ const inputRif = document.getElementById('input-rif');
 // 5. CONTROLADOR PARA SUBIR CÉDULA
 if (inputCedula) {
     inputCedula.addEventListener('change', function(e) {
-        const archivo = e.target.files[0]; // Corrección importante: leer el archivo [0]
+        const nameCedula = document.getElementById('name-cedula')
+        const archivo = e.target.files[0];
         if (archivo) {
             nameCedula.textContent = "Subiendo: " + archivo.name;
             nameCedula.style.color = "#ffa500";
@@ -213,6 +214,7 @@ if (inputCedula) {
                 function() {
                     tarea.snapshot.ref.getDownloadURL().then(function(url) {
                         urlCedulaExistente = url;
+                if (nameCedula) {
                         nameCedula.textContent = archivo.name;
                         nameCedula.style.color = "#00ff00";
                     });
@@ -225,7 +227,8 @@ if (inputCedula) {
 // 6. CONTROLADOR PARA SUBIR RIF
 if (inputRif) {
     inputRif.addEventListener('change', function(e) {
-        const archivo = e.target.files[0]; // Corrección importante: leer el archivo [0]
+        const nameRif = document.getElementById('name-rif')
+        const archivo = e.target.files[0]; 
         if (archivo) {
             nameRif.textContent = "Subiendo: " + archivo.name;
             nameRif.style.color = "#ffa500";
