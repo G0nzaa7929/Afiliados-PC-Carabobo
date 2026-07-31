@@ -253,74 +253,60 @@ if (inputRif) {
 
 // 7. FUNCIÓN DEL BOTÓN: BUSCAR / EDITAR EMPRESA
 function buscarEmpresa(event) {
-    alert("la funcion se esta ejecutando")
-   .then(function(snapshot) {
-        if (snapshot.exists()) {
-            alert("¡Empresa encontrada en Firebase!");
-            
-            snapshot.forEach(function(childSnapshot) {
-                idEmpresaSeleccionada = childSnapshot.key; 
-                const datosEmpresa = childSnapshot.val(); 
+    if (event) event.preventDefault();
 
-                if (document.getElementById('nombre_empresa')) {
-                    document.getElementById('nombre_empresa').value = datosEmpresa.nombre || "";
-                }
-                if (document.getElementById('rif')) {
-                    document.getElementById('rif').value = datosEmpresa.rif || "";
-                }
+    const inputRif = document.getElementById('buscar_rif');
+    if (!inputRif) {
+        alert("Error: No se encontró el campo 'buscar_rif' en el HTML.");
+        return;
+    }
 
-                if (typeof nameCedula !== 'undefined') nameCedula.textContent = datosEmpresa.cedulaUrl ? "Ya tiene cédula cargada" : "Ningún archivo seleccionado";
-                if (typeof nameRif !== 'undefined') nameRif.textContent = datosEmpresa.rifUrl ? "Ya tiene RIF cargado" : "Ningún archivo seleccionado";
-            });
-
-            alert("Formulario cargado con éxito.");
-        } else {
-            alert("No se encontró ningún afiliado con el RIF ingresado.");
-        }
-    }).catch(function(error) {
-        alert("Error crítico de Firebase: " + error.message);
-    });
-}
-
-    const rifABuscar = document.getElementById('buscar_rif').value.trim();
-    if (!rifABuscar) {
+    const rifABuscar = inputRif.value.trim();
+    if (rifABuscar === "") {
         alert("Por favor, introduce un RIF para buscar.");
+        return;
+    }
+
+    if (typeof database === 'undefined') {
+        alert("Error: La base de datos de Firebase no está cargada.");
         return;
     }
 
     database.ref('afiliados').orderByChild('rif').equalTo(rifABuscar).once('value')
     .then(function(snapshot) {
         if (snapshot.exists()) {
+            alert("¡Empresa encontrada en Firebase!");
             
-            // RECORRIDO SEGURO: Usamos el método nativo de Firebase
             snapshot.forEach(function(childSnapshot) {
-                idEmpresaSeleccionada = childSnapshot.key; // Guarda el ID único
-                const datosEmpresa = childSnapshot.val(); // Extrae los datos reales
-
-                if (document.getElementById('nombre_empresa')) {
-                    document.getElementById('nombre_empresa').value = datosEmpresa.nombre || "";
-                }
-                if (document.getElementById('rif')) {
-                    document.getElementById('rif').value = datosEmpresa.rif || "";
+                if (typeof idEmpresaSeleccionada !== 'undefined') {
+                    idEmpresaSeleccionada = childSnapshot.key;
+                } else {
+                    window.idEmpresaSeleccionada = childSnapshot.key;
                 }
 
-                // Actualizar etiquetas de carga de archivos
-                if (typeof nameCedula !== 'undefined' && typeof nameRif !== 'undefined') {
-                    nameCedula.textContent = datosEmpresa.cedulaUrl ? "Ya tiene cédula cargada" : "Ningún archivo seleccionado";
-                    nameRif.textContent = datosEmpresa.rifUrl ? "Ya tiene RIF cargado" : "Ningún archivo seleccionado";
-                    nameCedula.style.color = "";
-                    nameRif.style.color = "";
+                const datosEmpresa = childSnapshot.val();
+
+                const campoNombre = document.getElementById('nombre_empresa');
+                const campoRif = document.getElementById('rif');
+
+                if (campoNombre) campoNombre.value = datosEmpresa.nombre || "";
+                if (campoRif) campoRif.value = datosEmpresa.rif || "";
+
+                if (typeof nameCedula !== 'undefined' && datosEmpresa.cedulaUrl) {
+                    nameCedula.textContent = "Ya tiene cédula cargada";
+                }
+                if (typeof nameRif !== 'undefined' && datosEmpresa.rifUrl) {
+                    nameRif.textContent = "Ya tiene RIF cargado";
                 }
             });
 
-            alert("Empresa encontrada y cargada correctamente.");
+            alert("Formulario cargado con éxito.");
         } else {
-            alert("No se encontró ninguna empresa con ese RIF.");
-            idEmpresaSeleccionada = "";
+            alert("No se encontró ningún afiliado con el RIF ingresado.");
         }
-    }).catch(function(error) {
-        console.error("Error en Firebase:", error);
-        alert("Error al buscar en la base de datos.");
+    })
+    .catch(function(error) {
+        alert("Error crítico de Firebase: " + error.message);
     });
 }
 function registrarEmpresa() {
