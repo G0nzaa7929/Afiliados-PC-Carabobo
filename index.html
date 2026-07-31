@@ -261,25 +261,27 @@ function buscarEmpresa(event) {
     database.ref('afiliados').orderByChild('rif').equalTo(rifABuscar).once('value')
     .then(function(snapshot) {
         if (snapshot.exists()) {
-            const resultado = snapshot.val();
             
-            // CORRECCIÓN AQUÍ: Extraemos el primer ID del arreglo de llaves
-            const keys = Object.keys(resultado);
-            idEmpresaSeleccionada = keys[0]; 
-            
-            const datosEmpresa = resultado[idEmpresaSeleccionada];
+            // RECORRIDO SEGURO: Usamos el método nativo de Firebase
+            snapshot.forEach(function(childSnapshot) {
+                idEmpresaSeleccionada = childSnapshot.key; // Guarda el ID único
+                const datosEmpresa = childSnapshot.val(); // Extrae los datos reales
 
-            if (document.getElementById('nombre_empresa')) {
-                document.getElementById('nombre_empresa').value = datosEmpresa.nombre || "";
-            }
-            if (document.getElementById('rif')) {
-                document.getElementById('rif').value = datosEmpresa.rif || "";
-            }
+                if (document.getElementById('nombre_empresa')) {
+                    document.getElementById('nombre_empresa').value = datosEmpresa.nombre || "";
+                }
+                if (document.getElementById('rif')) {
+                    document.getElementById('rif').value = datosEmpresa.rif || "";
+                }
 
-            nameCedula.textContent = datosEmpresa.cedulaUrl ? "Ya tiene cédula cargada" : "Ningún archivo seleccionado";
-            nameRif.textContent = datosEmpresa.rifUrl ? "Ya tiene RIF cargado" : "Ningún archivo seleccionado";
-            nameCedula.style.color = "";
-            nameRif.style.color = "";
+                // Actualizar etiquetas de carga de archivos
+                if (typeof nameCedula !== 'undefined' && typeof nameRif !== 'undefined') {
+                    nameCedula.textContent = datosEmpresa.cedulaUrl ? "Ya tiene cédula cargada" : "Ningún archivo seleccionado";
+                    nameRif.textContent = datosEmpresa.rifUrl ? "Ya tiene RIF cargado" : "Ningún archivo seleccionado";
+                    nameCedula.style.color = "";
+                    nameRif.style.color = "";
+                }
+            });
 
             alert("Empresa encontrada y cargada correctamente.");
         } else {
@@ -287,11 +289,10 @@ function buscarEmpresa(event) {
             idEmpresaSeleccionada = "";
         }
     }).catch(function(error) {
-        console.error(error);
+        console.error("Error en Firebase:", error);
         alert("Error al buscar en la base de datos.");
     });
 }
-
 function registrarEmpresa() {
     // 8. Alerta inmediata para confirmar que el botón responde al hacer clic
     alert("¡El botón responderá! Iniciando proceso de registro...");
