@@ -323,17 +323,19 @@ if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
 if (typeof nameCedula !== 'undefined' && nameCedula && datosEmpresa.cedulaUrl) {
     nameCedula.textContent = "Ya tiene cédula cargada";
 }
+            
 if (typeof nameRif !== 'undefined' && nameRif && datosEmpresa.rifUrl) {
     nameRif.textContent = "Ya tiene RIF cargado";
-});
-
-  } else   {
+}
+    });
+  } else  {
     alert("No se encontro ningun afiliado con el Rif ingresado")
   }
 })
-    .catch(function(error) {
+ .catch(function(error) {
         alert("Error critico de Firebase: " + error.message);
 });
+}
 
    // 8. FUNCIÓN DEL BOTÓN: REGISTRAR EMPRESA
 function registrarEmpresa(event) {
