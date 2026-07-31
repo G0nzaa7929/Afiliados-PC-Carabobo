@@ -144,7 +144,7 @@
   </div>
 
   <script>
-      let idEmpresaSeleccionada = null;
+     
     // Mostrar el nombre del archivo de la Cédula al seleccionarlo
     document.getElementById('input-cedula').addEventListener('change', function(e) {
       const fileName = e.target.files[0] ? e.target.files[0].name : 'Ningún archivo seleccionado';
@@ -185,8 +185,6 @@
 
   // 1. VARIABLES GLOBALES
 let idEmpresaSeleccionada = "";
-let nameCedula = document.getElementById("name-cedula") ;
-let nameRif = document.getElementById("name-rif") ;
     
   // 2. INICIALIZACIÓN DE SERVICIOS
 if (!firebase.apps.length) {
