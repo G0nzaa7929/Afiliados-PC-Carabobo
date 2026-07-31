@@ -249,39 +249,45 @@ if (inputRif) {
 }
 
 // 7. FUNCIÓN DEL BOTÓN: BUSCAR / EDITAR EMPRESA
-function buscarEmpresa() {
+function buscarEmpresa(event) {
+    if (event) event.preventDefault();
+
     const rifABuscar = document.getElementById('buscar_rif').value.trim();
     if (!rifABuscar) {
         alert("Por favor, introduce un RIF para buscar.");
         return;
     }
-    
+
     database.ref('afiliados').orderByChild('rif').equalTo(rifABuscar).once('value')
     .then(function(snapshot) {
         if (snapshot.exists()) {
-            // Obtenemos el ID único generado por Firebase push()
             const resultado = snapshot.val();
-            idEmpresaSeleccionada = Object.keys(resultado)[0]; 
-            const datosEmpresa = resultado[idEmpresaSeleccionada];
             
+            // CORRECCIÓN AQUÍ: Extraemos el primer ID del arreglo de llaves
+            const keys = Object.keys(resultado);
+            idEmpresaSeleccionada = keys[0]; 
+            
+            const datosEmpresa = resultado[idEmpresaSeleccionada];
+
             if (document.getElementById('nombre_empresa')) {
                 document.getElementById('nombre_empresa').value = datosEmpresa.nombre || "";
             }
             if (document.getElementById('rif')) {
                 document.getElementById('rif').value = datosEmpresa.rif || "";
             }
-            
+
             nameCedula.textContent = datosEmpresa.cedulaUrl ? "Ya tiene cédula cargada" : "Ningún archivo seleccionado";
             nameRif.textContent = datosEmpresa.rifUrl ? "Ya tiene RIF cargado" : "Ningún archivo seleccionado";
             nameCedula.style.color = "";
             nameRif.style.color = "";
+
             alert("Empresa encontrada y cargada correctamente.");
         } else {
             alert("No se encontró ninguna empresa con ese RIF.");
             idEmpresaSeleccionada = "";
         }
-    }).catch(function(error) { 
-        console.error(error); 
+    }).catch(function(error) {
+        console.error(error);
         alert("Error al buscar en la base de datos.");
     });
 }
