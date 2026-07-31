@@ -275,7 +275,16 @@ if (inputRif) {
                 const campoRif = document.getElementById('rif_empresa');        
                 const campoRegistro = document.getElementById('registro_empresa');   
                 const campoRepresentantes = document.getElementById('representantes_empresa');
-
+                const chkCarta = document.getElementById('chk_carta');
+                const chkActa = document.getElementById('chk_acta_miembros');
+                const chkListado  = document.getElementById('chk_listado_cpc');
+                const chkActaConstitutiva = document.getElementById('chk_acta_constitutiva'); 
+                const chkRifActualizado = document.getElementById('chk_rif_actualizado');     
+                const chkPlanilla = document.getElementById('chk_planilla_inscripcion');     
+                const chkCarpeta = document.getElementById('chk_carpeta_marron');             
+                const nameCedula = document.getElementById('nameCedula');
+                const nameRif = document.getElementById('nameRif');
+                
                 if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false;
                 if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_constitutiva || false;
                 if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false;
