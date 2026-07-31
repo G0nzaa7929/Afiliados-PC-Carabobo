@@ -155,7 +155,7 @@
     
             <!-- Botones Dinámicos de Control -->
         <div class="btn-group">
-            <button type="button" id="btnRegistrar" class="btn-reg" onclick="event.preventDefault(); registrarEmpresa(event)">Registrar Nueva Afiliación</button>
+            <button type="button" id="btnRegistrar" class="btn-reg" onclick="event.preventDefault(); registrarEmpresa(event)">Registrar / Actualizar Afiliación</button>
             <button type="button" id="btnActualizar" class="btn-act" onclick="event.preventDefault(); actualizarEmpresa(event)">Guardar Cambios (Actualizar Documentos)</button>
         </div>
     </form>
@@ -285,10 +285,12 @@ function buscarEmpresa(event) {
 
                 const campoNombre = document.getElementById('nombre_empresa');
                 const campoRif = document.getElementById('rif');
-
+                const nameCedula = document.getElementById('nameCedula');
+                const nameRif = document.getElementById('nameRif');
+                
                 if (campoNombre) campoNombre.value = datosEmpresa.nombre || "";
                 if (campoRif) campoRif.value = datosEmpresa.rif || "";
-
+                
                 if (typeof nameCedula !== 'undefined' && datosEmpresa.cedulaUrl) {
                     nameCedula.textContent = "Ya tiene cédula cargada";
                 }
