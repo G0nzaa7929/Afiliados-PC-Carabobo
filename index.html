@@ -181,6 +181,9 @@
     messagingSenderId: "559128386152",
     appId: "1:559128386152:web:d23826e19988b9e641f9dd"
   };
+
+  // 1. VARIABLES GLOBALES
+let idEmpresaSeleccionada = "";
     
   // 2. INICIALIZACIÓN DE SERVICIOS
 if (!firebase.apps.length) {
@@ -190,7 +193,6 @@ var database = firebase.database();
 var storage = firebase.storage();
     
  // 3. VARIABLES GLOBALES DE CONTROL
-let idEmpresaSeleccionada = "";
 let urlCedulaExistente = "";
 let urlRifExistente = "";
 
