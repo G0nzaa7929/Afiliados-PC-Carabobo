@@ -153,10 +153,6 @@
     });
   </script>
     
-<script src="https://gstatic.com"></script>
-<script src="https://gstatic.com"></script>
-<script src="https://gstatic.com"></script>
-    
             <!-- Botones Dinámicos de Control -->
         <div class="btn-group">
             <button type="button" id="btnRegistrar" class="btn-reg" onclick="event.preventDefault(); registrarEmpresa(event)">Registrar Nueva Afiliación</button>
@@ -170,22 +166,29 @@
 
 <div class="container">
     
+<!-- Enlaces correctos de Firebase versión 8 colocados en su lugar -->
+<script src= "https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src= "https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src= "https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
 <script>
-    // 1. CONFIGURACIÓN DE TU APP (Tus credenciales reales)
-const firebaseConfig = {
-    apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBRaDX4SWQEdOwM",
-    authDomain: "sistema-pc-carabobo.firebaseapp.com",
-    databaseURL: "https://sistema-pc-carabobo-default-rtdb.firebaseio.com",
+  // 1. CONFIGURACIÓN DE TU APP (Tus credenciales reales)
+  var firebaseConfig = {
+    apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBRaDX4SWQEd0wM",
+    authDomain: "://firebaseapp.com",
+    databaseURL: "https://firebaseio.com",
     projectId: "sistema-pc-carabobo",
-    storageBucket: "sistema-pc-carabobo.firebasestorage.app",
+    storageBucket: "://appspot.com",
     messagingSenderId: "559128386152",
     appId: "1:559128386152:web:d23826e19988b9e641f9dd"
-};
+  };
 
-// 2. INICIALIZACIÓN DE SERVICIOS
-firebase.initializeApp(firebaseConfig);
-const storage = firebase.storage();
-const database = firebase.database();
+  // 2. INICIALIZACIÓN DE SERVICIOS
+  if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+  }
+  var database = firebase.database();
+  var storage = firebase.storage();
 
 // 3. VARIABLES GLOBALES DE CONTROL
 let idEmpresaSeleccionada = "";
