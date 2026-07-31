@@ -285,7 +285,7 @@ function buscarEmpresa(event) {
 
                 const campoNombre = document.getElementById('nombre_empresa');
                 const campoRif = document.getElementById('rif_empresa');
-                const campoRegistro = document.getElementById('registro_empresa');
+                const campoRegistro = document.getElementById('registro_mercantil');
                 const campoRepresentantes = document.getElementById('representantes_empresa');
                 const chkCarta = document.getElementById('chk_carta');
                 const chkActa = document.getElementById('chk_acta_miebros');
@@ -294,6 +294,7 @@ function buscarEmpresa(event) {
                 const chkRifActualizado = document.getElementById('chk_rif_actualizado');
                 const chkPlanilla = document.getElementById('chk_planilla_inscripcion');
                 const chkCarpeta = document.getElementById('chk_carpeta_marron');
+                
                 const nameCedula = document.getElementById('nameCedula');
                 const nameRif = document.getElementById('nameRif');
                 
@@ -307,6 +308,7 @@ function buscarEmpresa(event) {
                 if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false;
                 if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_inscripcion || false;
                 if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
+                
                 if (typeof nameCedula !== 'undefined' && datosEmpresa.cedulaUrl) {
                     nameCedula.textContent = "Ya tiene cédula cargada";
                 }
