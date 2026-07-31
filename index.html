@@ -160,8 +160,8 @@
     
             <!-- Botones Dinámicos de Control -->
         <div class="btn-group">
-            <button type="button" id="btnRegistrar" class="btn-reg">Registrar / Actualizar Afiliación</button>
-            <button type="button" id="btnActualizar" class="byn-act">Guardar Cambios (Actualizar Documentos)</button>
+            <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa(event)">Registrar Empresa</button>
+            <button type="button" id="btnActualizar" class="byn-act" onclick="actualizarEmpresa(event)">Actualizar Cambios</button>
         </div>
     </form>
   
@@ -270,38 +270,48 @@ if (inputRif) {
                 window.idEmpresaSeleccionada = childSnapshot.key;
                 const datosEmpresa = childSnapshot.val();
                 console.log("Datos exactos de Firebase:", datosEmpresa);
-                // Elementos de texto
-                const campoNombre = document.getElementById('nombre_empresa');
-                const campoRif = document.getElementById('rif_empresa');        
-                const campoRegistro = document.getElementById('registro_empresa');   
-                const campoRepresentantes = document.getElementById('representantes_empresa');
-                const chkCarta = document.getElementById('chk_carta');
-                const chkActa = document.getElementById('chk_acta_miembros');
-                const chkListado  = document.getElementById('chk_listado_cpc');
-                const chkActaConstitutiva = document.getElementById('chk_acta_constitutiva'); 
-                const chkRifActualizado = document.getElementById('chk_rif_actualizado');     
-                const chkPlanilla = document.getElementById('chk_planilla_inscripcion');     
-                const chkCarpeta = document.getElementById('chk_carpeta_marron');             
-                const nameCedula = document.getElementById('nameCedula');
-                const nameRif = document.getElementById('nameRif');
                 
-                if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false;
-                if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_constitutiva || false;
-                if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false;
-                if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_inscripcion || false;
-                if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
-                if (campoNombre) campoNombre.value = datosEmpresa.nombre || '';
-                if (campoRif) campoRif.value = datosEmpresa.rif || '';
-                if (campoRegistro) campoRegistro.value = datosEmpresa.fechaRegistro || '';
-                if (campoRepresentantes) campoRepresentantes.value = datosEmpresa.representantes_empresa || '';
-                
-                //  AQUÍ ADENTRO SÍ RECONOCE A datosEmpresa PERFECTAMENTE:
-                if (nameCedula && datosEmpresa.cedulaUrl) {
-                    nameCedula.textContent = "Ya tiene cédula cargada";
-                }
-                if (nameRif && datosEmpresa.rifUrl) {
-                    nameRif.textContent = "Ya tiene RIF cargado";
-                }
+              // Elementos de texto e inputs
+        const campoNombre = document.getElementById('nombre_empresa');
+        const campoRif = document.getElementById('rif_empresa');
+        const campoRegistro = document.getElementById('registro_empresa');
+        const campoRepresentantes = document.getElementById('representantes_empresa');
+        
+        // Checkboxes corregidos según el HTML
+        const chkCarta = document.getElementById('chk_carta');
+        const chkActa = document.getElementById('chk_acta_miembros');
+        const chkListado = document.getElementById('chk_listado_cpc');
+        const chkActaConstitutiva = document.getElementById('chk_acta_constitutiva');
+        const chkRifActualizado = document.getElementById('chk_rif_actualizado');
+        const chkPlanilla = document.getElementById('chk_planilla_beneficiarios'); // <- CORREGIDO
+        const chkCarpeta = document.getElementById('chk_carpeta_marron');
+        
+        // Elementos contenedores de archivos corregidos según el HTML
+        const nameCedula = document.getElementById('name-cedula'); // <- CORREGIDO (con guion)
+        const nameRif = document.getElementById('name-rif');
+
+        // 1. ASIGNACIÓN DE TEXTOS
+        if (campoNombre) campoNombre.value = datosEmpresa.nombre || '';
+        if (campoRif) campoRif.value = datosEmpresa.rif || '';
+        if (campoRegistro) campoRegistro.value = datosEmpresa.fechaRegistro || '';
+        if (campoRepresentantes) campoRepresentantes.value = datosEmpresa.representantes || '';
+
+        // 2. ASIGNACIÓN DE CHECKBOXES
+        if (chkCarta) chkCarta.checked = datosEmpresa.chk_carta || false;
+        if (chkActa) chkActa.checked = datosEmpresa.chk_acta_miembros || false;
+        if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false;
+        if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_constitutiva || false;
+        if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false;
+        if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_beneficiarios || false;
+        if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
+
+        // 3. TEXTOS DE ARCHIVOS CARGADOS
+        if (nameCedula) {
+            nameCedula.textContent = datosEmpresa.cedulaUrl ? "Ya tiene cédula cargada" : "Ningún archivo seleccionado";
+        }
+        if (nameRif) {
+            nameRif.textContent = datosEmpresa.rifUrl ? "Ya tiene RIF cargado" : "Ningún archivo seleccionado";
+        }
             }); // Cierra el snapshot.forEach
         } else {
             alert("No se encontró ningún afiliado con el RIF ingresado.");
