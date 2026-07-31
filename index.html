@@ -160,8 +160,8 @@
     
             <!-- Botones Dinámicos de Control -->
         <div class="btn-group">
-            <button type="button" id="btnRegistrar" class="btn-reg" onclick="event.preventDefault(); registrarEmpresa(event)">Registrar / Actualizar Afiliación</button>
-            <button type="button" id="btnActualizar" class="btn-act" onclick="event.preventDefault(); actualizarEmpresa(event)">Guardar Cambios (Actualizar Documentos)</button>
+            <button type="button" id="btnRegistrar" class="btn-reg">Registrar / Actualizar Afiliación</button>
+            <button type="button" id="btnActualizar" class="byn-act">Guardar Cambios (Actualizar Documentos)</button>
         </div>
     </form>
   
@@ -307,14 +307,15 @@ if (inputRif) {
         alert("Error crítico de Firebase: " + error.message);
     });
 }
-    
-// 9. FUNCIÓN DEL BOTÓN: GUARDAR CAMBIOS (ACTUALIZAR DOCUMENTOS)
-function actualizarEmpresa() {
+    function actualizarEmpresa() {
     if (!idEmpresaSeleccionada) {
         alert("Primero debes buscar una empresa por su RIF para poder actualizarla.");
         return;
     }
+
     const actualizaciones = {};
+
+    // CORRECCIÓN: Quitamos el '!' para que guarde cuando SÍ existan las URLs
     if (urlCedulaExistente) actualizaciones['cedulaUrl'] = urlCedulaExistente;
     if (urlRifExistente) actualizaciones['rifUrl'] = urlRifExistente;
 
@@ -323,13 +324,15 @@ function actualizarEmpresa() {
         return;
     }
 
+    // Ejecuta la actualización en el nodo correcto
     database.ref('afiliados/' + idEmpresaSeleccionada).update(actualizaciones)
     .then(function() {
         alert("¡Documentos actualizados correctamente!");
+        // Limpiamos las variables globales de control de archivos
         urlCedulaExistente = "";
         urlRifExistente = "";
-    }).catch(function(error) { 
-        console.error(error); 
+    }).catch(function(error) {
+        console.error(error);
         alert("Error al actualizar los documentos.");
     });
 }
