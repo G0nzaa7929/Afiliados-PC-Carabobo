@@ -315,45 +315,53 @@ function buscarEmpresa(event) {
         alert("Error crítico de Firebase: " + error.message);
     });
 }
-function registrarEmpresa() {
-    // 8. Alerta inmediata para confirmar que el botón responde al hacer clic
-    alert("¡El botón responderá! Iniciando proceso de registro...");
 
-    const inputRifFormulario = document.getElementById('rif') || document.getElementById('rif_empresa') || document.getElementById('buscar_rif');
-    const inputNombreFormulario = document.getElementById('nombre_empresa');
-    const rifValor = inputRifFormulario ? inputRifFormulario.value.trim() : "";
-    const nombreValor = inputNombreFormulario ? inputNombreFormulario.value.trim() : "";
+    // 8. FUNCIÓN DEL BOTÓN: REGISTRAR EMPRESA
+function registrarEmpresa(event) {
+    if (event) event.preventDefault();
+    
+    alert("1. Entrando a la función de Registro"); // <-- Alerta de control
 
-    console.log("Valores capturados - RIF:", rifValor, "Nombre:", nombreValor);
+    const campoNombre = document.getElementById('nombre_empresa');
+    const campoRif = document.getElementById('rif');
 
-    if (!rifValor || !nombreValor) {
-        alert("Por favor, completa el RIF y el Nombre de la Empresa en el formulario.");
+    if (!campoNombre || !campoRif) {
+        alert("Error: No se encontraron los campos del formulario en el HTML.");
         return;
     }
 
-    // AVISO: Quitamos temporalmente la validación estricta de archivos para la prueba
-    alert("Guardando datos en Firebase... Nombre: " + nombreValor + " / RIF: " + rifValor);
+    const nombre = campoNombre.value.trim();
+    const rif = campoRif.value.trim();
 
-    const nuevaEmpresaRef = database.ref('afiliados').push();
-    nuevaEmpresaRef.set({
-        rif: rifValor,
-        nombre: nombreValor,
-        cedulaUrl: urlCedulaExistente || "No cargado", // Si no hay archivo, guarda este texto provisional
-        rifUrl: urlRifExistente || "No cargado",
+    if (nombre === "" || rif === "") {
+        alert("Por favor, llena los campos obligatorios (Nombre y RIF).");
+        return;
+    }
+
+    alert("2. Datos validados. Intentando conectar con Firebase..."); // <-- Alerta de control
+
+    // Objeto con los datos que se van a guardar
+    const nuevaEmpresa = {
+        nombre: nombre,
+        rif: rif,
         fechaRegistro: new Date().toISOString()
-    })
+    };
+
+    // Guardar directamente en el nodo 'afiliados' con un ID automático (push)
+    database.ref('afiliados').push(nuevaEmpresa)
     .then(function() {
-        alert("¡Empresa registrada exitosamente en la base de datos!");
-        if (document.getElementById('formaAfiliacion')) document.getElementById('formaAfiliacion').reset();
-        urlCedulaExistente = "";
-        urlRifExistente = "";
-        nameCedula.textContent = "Ningún archivo seleccionado";
-        nameRif.textContent = "Ningún archivo seleccionado";
-    }).catch(function(error) { 
-        console.error("Error devuelto por Firebase:", error); 
-        alert("Error al guardar los datos en el registro: " + error.message); 
+        alert("¡Empresa registrada con éxito en la base de datos!");
+        // Opcional: Limpiar el formulario
+        if(document.getElementById('formAfiliacion')) {
+            document.getElementById('formAfiliacion').reset();
+        }
+    })
+    .catch(function(error) {
+        console.error("Error al registrar:", error);
+        alert("Error crítico al guardar en Firebase: " + error.message);
     });
 }
+    
 // 9. FUNCIÓN DEL BOTÓN: GUARDAR CAMBIOS (ACTUALIZAR DOCUMENTOS)
 function actualizarEmpresa() {
     if (!idEmpresaSeleccionada) {
