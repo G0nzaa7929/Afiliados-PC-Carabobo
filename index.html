@@ -316,17 +316,26 @@ function buscarEmpresa(event) {
     });
 }
 
-    // 8. FUNCIÓN DEL BOTÓN: REGISTRAR EMPRESA
+   // 8. FUNCIÓN DEL BOTÓN: REGISTRAR EMPRESA
 function registrarEmpresa(event) {
     if (event) event.preventDefault();
     
-    alert("1. Entrando a la función de Registro"); // <-- Alerta de control
+    // Intentar leer por los IDs comunes
+    let campoNombre = document.getElementById('nombre_empresa') || document.getElementById('nombre');
+    let campoRif = document.getElementById('rif') || document.getElementById('rif_empresa') || document.getElementById('buscar_rif');
 
-    const campoNombre = document.getElementById('nombre_empresa');
-    const campoRif = document.getElementById('rif');
-
+    // Si aun así no los encuentra, los busca por las cajas de texto de la página
     if (!campoNombre || !campoRif) {
-        alert("Error: No se encontraron los campos del formulario en el HTML.");
+        const todosLosInputs = document.querySelectorAll('input[type="text"]');
+        if (todosLosInputs.length >= 2) {
+            campoRif = todosLosInputs[0];    // El primer cuadro de texto suele ser el RIF de búsqueda
+            campoNombre = todosLosInputs[1]; // El segundo cuadro suele ser el Nombre
+        }
+    }
+
+    // Validación final por si la página no tiene inputs
+    if (!campoNombre || !campoRif) {
+        alert("Error: Los cuadros de texto del formulario no tienen los IDs correctos ('nombre_empresa' y 'rif'). Revisa tu HTML.");
         return;
     }
 
@@ -334,31 +343,26 @@ function registrarEmpresa(event) {
     const rif = campoRif.value.trim();
 
     if (nombre === "" || rif === "") {
-        alert("Por favor, llena los campos obligatorios (Nombre y RIF).");
+        alert("Por favor, introduce al menos el Nombre y el RIF para poder registrar.");
         return;
     }
 
-    alert("2. Datos validados. Intentando conectar con Firebase..."); // <-- Alerta de control
-
-    // Objeto con los datos que se van a guardar
+    // Estructura de datos para Firebase
     const nuevaEmpresa = {
         nombre: nombre,
         rif: rif,
         fechaRegistro: new Date().toISOString()
     };
 
-    // Guardar directamente en el nodo 'afiliados' con un ID automático (push)
     database.ref('afiliados').push(nuevaEmpresa)
     .then(function() {
-        alert("¡Empresa registrada con éxito en la base de datos!");
-        // Opcional: Limpiar el formulario
-        if(document.getElementById('formAfiliacion')) {
+        alert("¡Empresa registrada con éxito en Firebase!");
+        if (document.getElementById('formAfiliacion')) {
             document.getElementById('formAfiliacion').reset();
         }
     })
     .catch(function(error) {
-        console.error("Error al registrar:", error);
-        alert("Error crítico al guardar en Firebase: " + error.message);
+        alert("Error al guardar en la base de datos: " + error.message);
     });
 }
     
