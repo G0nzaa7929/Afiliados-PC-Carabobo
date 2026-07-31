@@ -281,41 +281,51 @@ function buscarEmpresa(event) {
                     window.idEmpresaSeleccionada = childSnapshot.key;
                 }
 
-                const datosEmpresa = childSnapshot.val();
+               // 7.5. Atrapamos todos los elementos de la pantalla (Si uno no existe, dará null pero NO romperá el código)
+const campoNombre = document.getElementById('nombre_empresa');
+const campoRif = document.getElementById('rif_empresa');        
+const campoRegistro = document.getElementById('registro_empresa');   
+const campoRepresentantes = document.getElementById('representantes_empresa'); 
 
-                const campoNombre = document.getElementById('nombre_empresa');
-                const campoRif = document.getElementById('rif_empresa');
-                const campoRegistro = document.getElementById('registro_mercantil');
-                const campoRepresentantes = document.getElementById('representantes_empresa');
-                const chkCarta = document.getElementById('chk_carta');
-                const chkActa = document.getElementById('chk_acta_miebros');
-                const chkListado = document.getElementById('chk_listado_cpc');
-                const chkActaConstitutiva = document.getElementById('chk_acta_constitutiva');
-                const chkRifActualizado = document.getElementById('chk_rif_actualizado');
-                const chkPlanilla = document.getElementById('chk_planilla_inscripcion');
-                const chkCarpeta = document.getElementById('chk_carpeta_marron');
-                
-                const nameCedula = document.getElementById('nameCedula');
-                const nameRif = document.getElementById('nameRif');
-                
-                if (campoNombre) campoNombre.value = datosEmpresa.nombre || "";
-                if (campoRif) campoRif.value = datosEmpresa.rif || "";
-                if (campoRegistro campoRegistro.value = datosEmpresa.registro ||"";
-                if (chkCarta) chkCarta.checked = datosEmpresa.chk_carta || false;
-                if (chkActa) chkActa.checked = datosEmpresa.chk_acta_miembros || false;
-                if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false;
-                if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_constitutiva || false;
-                if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false;
-                if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_inscripcion || false;
-                if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
-                
-                if (typeof nameCedula !== 'undefined' && datosEmpresa.cedulaUrl) {
-                    nameCedula.textContent = "Ya tiene cédula cargada";
-                }
-                if (typeof nameRif !== 'undefined' && datosEmpresa.rifUrl) {
-                    nameRif.textContent = "Ya tiene RIF cargado";
-                }
-            });
+const chkCarta = document.getElementById('chk_carta');
+const chkActa = document.getElementById('chk_acta_miembros');
+const chkListado = document.getElementById('chk_listado_cpc');
+
+const chkActaConstitutiva = document.getElementById('chk_acta_constitutiva'); 
+const chkRifActualizado = document.getElementById('chk_rif_actualizado');     
+const chkPlanilla = document.getElementById('chk_planilla_inscripcion');     
+const chkCarpeta = document.getElementById('chk_carpeta_marron');            
+
+const nameCedula = document.getElementById('nameCedula');
+const nameRif = document.getElementById('nameRif');
+
+// ==========================================
+// 🚀 ASIGNACIÓN SEGURA (Solo actúa si el elemento existe en el HTML)
+// ==========================================
+
+// Rellenar textos de forma segura
+if (campoNombre) campoNombre.value = datosEmpresa.nombre || "";
+if (campoRif) campoRif.value = datosEmpresa.rif || "";
+if (campoRegistro) campoRegistro.value = datosEmpresa.registro || ""; 
+if (campoRepresentantes) campoRepresentantes.value = datosEmpresa.representantes || ""; 
+
+// Marcar casillas de forma segura
+if (chkCarta) chkCarta.checked = datosEmpresa.chk_carta || false;
+if (chkActa) chkActa.checked = datosEmpresa.chk_acta_miembros || false;
+if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false;
+
+if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_constitutiva || false;
+if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false;
+if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_inscripcion || false;
+if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
+
+// Estado de archivos cargados
+if (typeof nameCedula !== 'undefined' && nameCedula && datosEmpresa.cedulaUrl) {
+    nameCedula.textContent = "Ya tiene cédula cargada";
+}
+if (typeof nameRif !== 'undefined' && nameRif && datosEmpresa.rifUrl) {
+    nameRif.textContent = "Ya tiene RIF cargado";
+}
 
             alert("Formulario cargado con éxito.");
         } else {
