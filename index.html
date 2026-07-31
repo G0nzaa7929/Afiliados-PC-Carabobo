@@ -188,15 +188,13 @@
   }
   var database = firebase.database();
   var storage = firebase.storage();
+  let idEmpresaSeleccionada="";
 
   // 2. INICIALIZACIÓN DE SERVICIOS
-  if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-  }
-  var database = firebase.database();
-  var storage = firebase.storage();
-
-// 3. VARIABLES GLOBALES DE CONTROL
+var database = firebase.database();
+var storage = firebase.storage();
+    
+ // 3. VARIABLES GLOBALES DE CONTROL
 let idEmpresaSeleccionada = "";
 let urlCedulaExistente = "";
 let urlRifExistente = "";
