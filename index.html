@@ -193,7 +193,7 @@ if (!firebase.apps.length) {
    firebase.initializeApp(firebaseConfig);
   }
 var database = firebase.database();
-const storage = firebase.storage();
+const storage = firebase.app().storage();
     
 // 4. REFERENCIAS A LOS ELEMENTOS DE TU PÁGINA
 const inputCedula = document.getElementById('input-cedula');
