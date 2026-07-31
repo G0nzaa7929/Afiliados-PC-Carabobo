@@ -55,7 +55,7 @@
     <label for="buscar_rif">Buscar Empresa Registrada (Introducir RIF):</label>
     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
         <input type="text" id="buscar_rif" placeholder="Ej: J-12345678-0">
-        <button type="button" class="btn-bus" style="flex: 0 0 140px;" onclick="buscarEmpresa()">Buscar / Editar</button>
+        <button type="button" class="btn-bus" style="flex: 0 0 140px;" onclick="event.preventDefault(); buscarEmpresa(event)">Buscar Empresa</button>
     </div>
     
     <hr>
@@ -159,8 +159,8 @@
     
             <!-- Botones Dinámicos de Control -->
         <div class="btn-group">
-            <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa()">Registrar Nueva Afiliación</button>
-            <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarEmpresa()">Guardar Cambios (Actualizar Documentos)</button>
+            <button type="button" id="btnRegistrar" class="btn-reg" onclick="event.preventDefault(); registrarEmpresa(event)">Registrar Nueva Afiliación</button>
+            <button type="button" id="btnActualizar" class="btn-act" onclick="event.preventDefault(); actualizarEmpresa(event)">Guardar Cambios (Actualizar Documentos)</button>
         </div>
     </form>
   
