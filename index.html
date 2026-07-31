@@ -269,7 +269,7 @@ if (inputRif) {
             snapshot.forEach(function(childSnapshot) {
                 window.idEmpresaSeleccionada = childSnapshot.key;
                 const datosEmpresa = childSnapshot.val();
-
+                console.log("Datos exactos de Firebase:", datosEmpresa);
                 // Elementos de texto
                 const campoNombre = document.getElementById('nombre_empresa');
                 const campoRif = document.getElementById('rif_empresa');        
