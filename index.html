@@ -232,31 +232,38 @@ const inputRif = document.getElementById('input-rif');
     }
 
 // 6. CONTROLADOR PARA SUBIR RIF
-if (inputRif) {
-    inputRif.addEventListener('change', function(e) {
-        const nameRif = document.getElementById('name-rif')
-        const archivo = e.target.files[0]; 
-        if (archivo) {
-            nameRif.textContent = "Subiendo: " + archivo.name;
-            nameRif.style.color = "#ffa500";
-            
-            const ruta = 'rifs/' + Date.now() + '_' + archivo.name;
-            const tarea = storage.ref(ruta).put(archivo);
-            
-            tarea.on('state_changed', null, 
-                function(error) { console.error(error); alert("Error al subir RIF"); }, 
-                function() {
-                    tarea.snapshot.ref.getDownloadURL().then(function(url) {
-                        urlRifExistente = url;
-                        nameRif.textContent = archivo.name;
-                        nameRif.style.color = "#00ff00";
-                         }
-                    });
+    if (inputRif) {
+        inputRif.addEventListener('change', function(e) {
+            const nameRif = document.getElementById('name-rif');
+            const archivo = e.target.files; // Asegura el primer archivo
+
+            if (archivo) {
+                if (nameRif) {
+                    nameRif.textContent = "Subiendo: " + archivo.name;
+                    nameRif.style.color = "#ffa500";
                 }
-            );
-        }
-    });
-}
+
+                const ruta = 'rifs/' + Date.now() + '_' + archivo.name;
+                const tarea = storage.ref(ruta).put(archivo);
+
+                tarea.on('state_changed', null, 
+                    function(error) { 
+                        console.error(error); 
+                        alert("Error al subir RIF"); 
+                    }, 
+                    function() {
+                        tarea.snapshot.ref.getDownloadURL().then(function(url) {
+                            urlRifExistente = url;
+                            if (nameRif) {
+                                nameRif.textContent = archivo.name;
+                                nameRif.style.color = "#00ff00";
+                            }
+                        });
+                    }
+                );
+            }
+        });
+    }
     // 7. Empieza lo chistoso
     function buscarEmpresa(event) {
     if (event && typeof event.preventDefault === 'function') {
