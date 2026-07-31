@@ -254,7 +254,7 @@ function buscarEmpresa() {
     const rifBusqueda = document.getElementById('rif_busqueda')?.value ||
                         document.getElementById('rif_empresa')?.value ||
                         document.getElementById('rif_busqueda_empresa')?.value; 
-    if (!rifBusqueda) || rifBusqueda.trim() === "") {
+    if (!rifBusqueda) {
         alert("Por favor, ingrese un RIF para buscar.");
         return;
     }
