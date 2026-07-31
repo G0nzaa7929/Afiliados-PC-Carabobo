@@ -193,7 +193,7 @@ if (!firebase.apps.length) {
    firebase.initializeApp(firebaseConfig);
   }
 var database = firebase.database();
-var storage = firebase.storage();
+const storage = firebase.storage();
     
 // 4. REFERENCIAS A LOS ELEMENTOS DE TU PÁGINA
 const inputCedula = document.getElementById('input-cedula');
@@ -328,7 +328,7 @@ if (typeof nameCedula !== 'undefined' && nameCedula && datosEmpresa.cedulaUrl) {
 if (typeof nameRif !== 'undefined' && nameRif && datosEmpresa.rifUrl) {
     nameRif.textContent = "Ya tiene RIF cargado";
 }
-    })
+    }
             
   } else  {
     alert("No se encontro ningun afiliado con el Rif ingresado")
