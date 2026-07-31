@@ -181,16 +181,11 @@
     messagingSenderId: "559128386152",
     appId: "1:559128386152:web:d23826e19988b9e641f9dd"
   };
-
-  // INICIALIZACIÓN COMPLETA
-  if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-  }
-  var database = firebase.database();
-  var storage = firebase.storage();
-  let idEmpresaSeleccionada="";
-
+    
   // 2. INICIALIZACIÓN DE SERVICIOS
+if (!firebase.apps.length) {
+   firebase,initializeApp(firebaseConfig);
+  }
 var database = firebase.database();
 var storage = firebase.storage();
     
