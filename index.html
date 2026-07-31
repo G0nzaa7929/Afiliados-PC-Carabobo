@@ -144,7 +144,7 @@
   </div>
 
   <script>
-      
+      let idEmpresaSeleccionada = null;
     // Mostrar el nombre del archivo de la Cédula al seleccionarlo
     document.getElementById('input-cedula').addEventListener('change', function(e) {
       const fileName = e.target.files[0] ? e.target.files[0].name : 'Ningún archivo seleccionado';
@@ -267,7 +267,7 @@ if (inputRif) {
             alert("¡Empresa encontrada en Firebase!");
             
             snapshot.forEach(function(childSnapshot) {
-                window.idEmpresaSeleccionada = childSnapshot.key;
+                idEmpresaSeleccionada = childSnapshot.key;
                 const datosEmpresa = childSnapshot.val();
                 console.log("Datos exactos de Firebase:", datosEmpresa);
                 
