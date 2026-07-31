@@ -248,143 +248,72 @@ if (inputRif) {
         }
     });
 }
-
-// 7. FUNCIÓN DEL BOTÓN: BUSCAR / EDITAR EMPRESA
-function buscarEmpresa(event) {
-    if (event) event.preventDefault();
-
-    const inputRif = document.getElementById('buscar_rif');
-    if (!inputRif) {
-        alert("Error: No se encontró el campo 'buscar_rif' en el HTML.");
+    // 7. Empieza lo chistoso
+    
+function buscarEmpresa() {
+    const rifBusqueda = document.getElementById('rif_busqueda')?.value || document.getElementById('rif_empresa')?.value;
+    if (!rifBusqueda) {
+        alert("Por favor, ingrese un RIF para buscar.");
         return;
     }
 
-    const rifABuscar = inputRif.value.trim();
-    if (rifABuscar === "") {
-        alert("Por favor, introduce un RIF para buscar.");
-        return;
-    }
-
-    if (typeof database === 'undefined') {
-        alert("Error: La base de datos de Firebase no está cargada.");
-        return;
-    }
-
-    database.ref('afiliados').orderByChild('rif').equalTo(rifABuscar).once('value')
+    firebase.database().ref('afiliados').orderByChild('rif').equalTo(rifBusqueda).once('value')
     .then(function(snapshot) {
         if (snapshot.exists()) {
             alert("¡Empresa encontrada en Firebase!");
             
             snapshot.forEach(function(childSnapshot) {
-                if (typeof idEmpresaSeleccionada !== 'undefined') {
-                    idEmpresaSeleccionada = childSnapshot.key;
-                } else {
-                    window.idEmpresaSeleccionada = childSnapshot.key;
+                window.idEmpresaSeleccionada = childSnapshot.key;
+                const datosEmpresa = childSnapshot.val();
+
+                // 1. Campos de texto
+                const campoNombre = document.getElementById('nombre_empresa');
+                const campoRif = document.getElementById('rif_empresa');        
+                const campoRegistro = document.getElementById('registro_empresa');   
+                const campoRepresentantes = document.getElementById('representantes_empresa'); 
+
+                // 2. Primer grupo de Checkboxes
+                const chkCarta = document.getElementById('chk_carta');
+                const chkActa = document.getElementById('chk_acta_miembros');
+                const chkListado = document.getElementById('chk_listado_cpc');
+
+                // 3. Segundo grupo de Checkboxes
+                const chkActaConstitutiva = document.getElementById('chk_acta_constitutiva'); 
+                const chkRifActualizado = document.getElementById('chk_rif_actualizado');     
+                const chkPlanilla = document.getElementById('chk_planilla_inscripcion');     
+                const chkCarpeta = document.getElementById('chk_carpeta_marron');            
+
+                const nameCedula = document.getElementById('nameCedula');
+                const nameRif = document.getElementById('nameRif');
+
+                // 4. Asignación de datos en pantalla
+                if (campoNombre) campoNombre.value = datosEmpresa.nombre || "";
+                if (campoRif) campoRif.value = datosEmpresa.rif || "";
+                if (campoRegistro) campoRegistro.value = datosEmpresa.registro || ""; 
+                if (campoRepresentantes) campoRepresentantes.value = datosEmpresa.representantes || ""; 
+
+                if (chkCarta) chkCarta.checked = datosEmpresa.chk_carta || false;
+                if (chkActa) chkActa.checked = datosEmpresa.chk_acta_miembros || false;
+                if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false;
+                if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_constitutiva || false;
+                if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false;
+                if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_inscripcion || false;
+                if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
+
+                // 🚀 AQUÍ ADENTRO SÍ RECONOCE A datosEmpresa PERFECTAMENTE:
+                if (nameCedula && datosEmpresa.cedulaUrl) {
+                    nameCedula.textContent = "Ya tiene cédula cargada";
                 }
-
-               // 7.5. Atrapamos todos los elementos de la pantalla (Si uno no existe, dará null pero NO romperá el código)
-const campoNombre = document.getElementById('nombre_empresa');
-const campoRif = document.getElementById('rif_empresa');        
-const campoRegistro = document.getElementById('registro_empresa');   
-const campoRepresentantes = document.getElementById('representantes_empresa'); 
-
-const chkCarta = document.getElementById('chk_carta');
-const chkActa = document.getElementById('chk_acta_miembros');
-const chkListado = document.getElementById('chk_listado_cpc');
-
-const chkActaConstitutiva = document.getElementById('chk_acta_constitutiva'); 
-const chkRifActualizado = document.getElementById('chk_rif_actualizado');     
-const chkPlanilla = document.getElementById('chk_planilla_inscripcion');     
-const chkCarpeta = document.getElementById('chk_carpeta_marron');            
-
-const nameCedula = document.getElementById('nameCedula');
-const nameRif = document.getElementById('nameRif');
-
-// ==========================================
-// 🚀 ASIGNACIÓN SEGURA (Solo actúa si el elemento existe en el HTML)
-// ==========================================
-
-// Rellenar textos de forma segura
-if (campoNombre) campoNombre.value = datosEmpresa.nombre || "";
-if (campoRif) campoRif.value = datosEmpresa.rif || "";
-if (campoRegistro) campoRegistro.value = datosEmpresa.registro || ""; 
-if (campoRepresentantes) campoRepresentantes.value = datosEmpresa.representantes || ""; 
-
-// Marcar casillas de forma segura
-if (chkCarta) chkCarta.checked = datosEmpresa.chk_carta || false;
-if (chkActa) chkActa.checked = datosEmpresa.chk_acta_miembros || false;
-if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false;
-
-if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_constitutiva || false;
-if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false;
-if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_inscripcion || false;
-if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
-
-// Estado de archivos cargados
-if (typeof nameCedula !== 'undefined' && nameCedula && datosEmpresa.cedulaUrl) {
-    nameCedula.textContent = "Ya tiene cédula cargada";
-}
-            
-if (typeof nameRif !== 'undefined' && nameRif && datosEmpresa.rifUrl) {
-    nameRif.textContent = "Ya tiene RIF cargado";
-}
-    });     
-  } else  {
-    alert("No se encontro ningun afiliado con el Rif ingresado")
-    }
-  })
- .catch(function(error) {
-        alert("Error critico de Firebase: " + error.message);
-    });
-}
-
-   // 8. FUNCIÓN DEL BOTÓN: REGISTRAR EMPRESA
-function registrarEmpresa(event) {
-    if (event) event.preventDefault();
-    
-    // Intentar leer por los IDs comunes
-    let campoNombre = document.getElementById('nombre_empresa') || document.getElementById('nombre');
-    let campoRif = document.getElementById('rif') || document.getElementById('rif_empresa') || document.getElementById('buscar_rif');
-
-    // Si aun así no los encuentra, los busca por las cajas de texto de la página
-    if (!campoNombre || !campoRif) {
-        const todosLosInputs = document.querySelectorAll('input[type="text"]');
-        if (todosLosInputs.length >= 2) {
-            campoRif = todosLosInputs[0];    // El primer cuadro de texto suele ser el RIF de búsqueda
-            campoNombre = todosLosInputs[1]; // El segundo cuadro suele ser el Nombre
-        }
-    }
-
-    // Validación final por si la página no tiene inputs
-    if (!campoNombre || !campoRif) {
-        alert("Error: Los cuadros de texto del formulario no tienen los IDs correctos ('nombre_empresa' y 'rif'). Revisa tu HTML.");
-        return;
-    }
-
-    const nombre = campoNombre.value.trim();
-    const rif = campoRif.value.trim();
-
-    if (nombre === "" || rif === "") {
-        alert("Por favor, introduce al menos el Nombre y el RIF para poder registrar.");
-        return;
-    }
-
-    // Estructura de datos para Firebase
-    const nuevaEmpresa = {
-        nombre: nombre,
-        rif: rif,
-        fechaRegistro: new Date().toISOString()
-    };
-
-    database.ref('afiliados').push(nuevaEmpresa)
-    .then(function() {
-        alert("¡Empresa registrada con éxito en Firebase!");
-        if (document.getElementById('formAfiliacion')) {
-            document.getElementById('formAfiliacion').reset();
+                if (nameRif && datosEmpresa.rifUrl) {
+                    nameRif.textContent = "Ya tiene RIF cargado";
+                }
+            }); // Cierra el snapshot.forEach
+        } else {
+            alert("No se encontró ningún afiliado con el RIF ingresado.");
         }
     })
     .catch(function(error) {
-        alert("Error al guardar en la base de datos: " + error.message);
+        alert("Error crítico de Firebase: " + error.message);
     });
 }
     
