@@ -193,7 +193,7 @@ if (!firebase.apps.length) {
    firebase.initializeApp(firebaseConfig);
   }
 var database = firebase.database();
-var storage = firebase.storage();
+const storage = firebase.storage();
     
 // 4. REFERENCIAS A LOS ELEMENTOS DE TU PÁGINA
 const inputCedula = document.getElementById('input-cedula');
@@ -332,8 +332,7 @@ if (typeof nameRif !== 'undefined' && nameRif && datosEmpresa.rifUrl) {
             
   } else  {
     alert("No se encontro ningun afiliado con el Rif ingresado")
-  }
-})
+  })
  .catch(function(error) {
         alert("Error critico de Firebase: " + error.message);
     });
