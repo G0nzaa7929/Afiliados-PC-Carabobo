@@ -184,6 +184,8 @@
 
   // 1. VARIABLES GLOBALES
 let idEmpresaSeleccionada = "";
+let nameCedula = document.getElementById("name-cedula") ;
+let nameRif = document.getElementById("name-rif") ;
     
   // 2. INICIALIZACIÓN DE SERVICIOS
 if (!firebase.apps.length) {
@@ -192,15 +194,9 @@ if (!firebase.apps.length) {
 var database = firebase.database();
 var storage = firebase.storage();
     
- // 3. VARIABLES GLOBALES DE CONTROL
-let urlCedulaExistente = "";
-let urlRifExistente = "";
-
 // 4. REFERENCIAS A LOS ELEMENTOS DE TU PÁGINA
 const inputCedula = document.getElementById('input-cedula');
 const inputRif = document.getElementById('input-rif');
-const nameCedula = document.getElementById('name-cedula');
-const nameRif = document.getElementById('name-rif');
 
 // 5. CONTROLADOR PARA SUBIR CÉDULA
 if (inputCedula) {
