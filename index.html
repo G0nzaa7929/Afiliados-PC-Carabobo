@@ -122,6 +122,7 @@
         <div class="btn-group">
             <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa(event)">Registrar Empresa</button>
             <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarEmpresa(event)">Actualizar Cambios</button>
+            <button type="button" id="btnLimpiar" class="btn btn-secondary" onclick="limpiarFormulario()">Limpiar Formulario</button>
         </div>
     </form>
     
@@ -300,6 +301,12 @@
         alert("Error al actualizar los datos en la base de datos.");
     });
   }
+    // Funcion Limpiar Formulario
+    function limpiarFormulario() {
+        const formulario = document.querySelector('form');
+        if (formulario) formulario.reset();
+        console.log("formulario limpio.");
+    }
 </script>
 </body>
 </html>
