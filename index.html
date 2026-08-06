@@ -8,7 +8,7 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f0f2f5; color: #333; }      
         /* Contenedor del Encabezado Oficial */
         .header-institucional { display: flex; align-items: center; justify-content: space-between; max-width: 650px; margin: 0 auto 20px auto; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .logo-img { width: 75px; height: 75px; object-fit: contain; } /* Equivalente visual a escala 5x5 equilibrada en web */
+        .logo-img { width: 75px; height: 75px; object-fit: contain; }
         .texto-header { text-align: center; flex: 1; font-weight: bold; font-size: 0.9em; line-height: 1.4; color: #1557b0; padding: 0 10px; }      
         /* Contenedor del Formulario */
         .container { max-width: 650px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 0 auto; }
@@ -32,10 +32,12 @@
         .btn-desc:hover { background-color: #138496; }
         hr { border: 0; border-top: 1px solid #dadce0; margin: 20px 0; }
     </style>    
-    <script src="https://gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- LIBRERÍAS OFICIALES DE FIREBASE CORREGIDAS -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
 </head>
 <body>
+
 <!-- Encabezado Institucional Requerido -->
 <div class="header-institucional">
     <img src="logo.jpg" alt="Logo Izquierdo" class="logo-img">
@@ -46,22 +48,27 @@
     </div>
     <img src="logo2.jpg" alt="Logo Derecho" class="logo-img">
 </div>
+
 <div class="container">
     <h2>Control de Afiliación</h2>   
+    
     <!-- Módulo de Búsqueda Rápida -->
     <label for="buscar_rif">Buscar Empresa Registrada (Introducir RIF):</label>
     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
         <input type="text" id="buscar_rif" placeholder="Ej: J-12345678-0">
-        <button type="button" class="btn-bus" style="flex: 0 0 140px;" onclick="event.preventDefault(); buscarEmpresa(event)">Buscar Empresa</button>
+        <button type="button" class="btn-bus" style="flex: 0 0 140px;" onclick="buscarEmpresa(event)">Buscar Empresa</button>
     </div>   
     <hr>
+    
     <!-- Formulario Principal -->
-    <form id="formAfiliacion">   
+    <form id="formAfiliacion" onsubmit="event.preventDefault();">   
         <h3>1. Datos Básicos de la Organización</h3>       
         <label for="nombre_empresa">Nombre de la Empresa:</label>
         <input type="text" id="nombre_empresa" required placeholder="Razón social completa">    
+        
         <label for="rif_empresa">RIF:</label>
         <input type="text" id="rif_empresa" required placeholder="Ej: J-12345678-0">       
+        
         <label for="registro_empresa">Registro:</label>
         <input type="text" id="registro_empresa" required placeholder="Tomo, Número, Registro...">
         
@@ -82,6 +89,7 @@
         <h3>3. Datos de Representación y Estatus Legal</h3>       
         <label for="representantes_cedulas">Representantes y Cédulas:</label>
         <textarea id="representantes_cedulas" placeholder="Ej: Juan Pérez V-12.345.678, María Gómez V-9.876.543..."></textarea>       
+        
         <div class="row-check" style="margin-top: 15px;">
             <input type="checkbox" id="chk_acta_actualizada">
             <label for="chk_acta_actualizada"><b>Acta constitutiva</b> (Marcar si está Actualizada)</label>
@@ -109,35 +117,85 @@
             <label for="chk_copia_rif">Copia física del RIF de la organización.</label>
         </div>
 
-        <!-- Botones de Acción Internos -->
+        <!-- Botones Dinámicos de Control -->
         <div class="btn-group">
-            <button type="submit" id="btnRegistrar" class="btn-reg">Registrar Empresa</button>
-            <button type="button" id="btnActualizar" class="btn-act">Guardar Cambios</button>
+            <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa(event)">Registrar Empresa</button>
+            <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarEmpresa(event)">Guardar Cambios</button>
         </div>
     </form>
+    
+    <a href="planilla.pdf" download class="btn-desc">📥 Descargar Planilla de Inscripción para Beneficiarios</a>
 </div>
-    <script>
-  // CONFIGURACIÓN DE TU APP CON TUS CREDENCIALES
+ <!-- LÓGICA DE PROGRAMACIÓN CONTROLADA -->
+<script>
+  // CREDENCIALES DE TU PROYECTO
   var firebaseConfig = {
     apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBRaDX4SWQEd0wM",
-    authDomain: "sistema-pc-carabobo.firebaseapp.com",
-    databaseURL: "https://sistema-pc-carabobo-default-rtdb.firebaseio.com",
+    authDomain: "://firebaseapp.com",
+    databaseURL: "https://firebaseio.com",
     projectId: "sistema-pc-carabobo",
-    storageBucket: "sistema-pc-carabobo.appspot.com",
+    storageBucket: "://appspot.com",
     messagingSenderId: "559128386152",
     appId: "1:559128386152:web:d23826e19988b9e641f9dd"
   };
 
-  // 1. VARIABLES GLOBALES
+  // VARIABLES GLOBALES
   let idEmpresaSeleccionada = "";
     
-  // 2. INICIALIZACIÓN DE SERVICIOS
+  // INICIALIZACIÓN DEL SERVICIO DATABASE
   if (!firebase.apps.length) {
      firebase.initializeApp(firebaseConfig);
   }
   var database = firebase.database();
 
-  // 3. FUNCIÓN: BUSCAR EMPRESA POR RIF
+  // 1. FUNCIÓN: REGISTRAR NUEVA EMPRESA
+  function registrarEmpresa(event) {
+    if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault(); 
+    }
+
+    const campoNombre = document.getElementById('nombre_empresa')?.value;
+    const campoRif = document.getElementById('rif_empresa')?.value;
+    const campoRegistro = document.getElementById('registro_empresa')?.value;
+    const campoRepresentantes = document.getElementById('representantes_cedulas')?.value;
+
+    if (!campoNombre || !campoRif) {
+        alert("El Nombre de la Empresa y el RIF son obligatorios para registrar.");
+        return;
+    }
+
+    const nuevaEmpresa = {
+        nombre: campoNombre,
+        rif: campoRif,
+        fechaRegistro: campoRegistro || '',
+        representantes: campoRepresentantes || '',
+        chk_carta: document.getElementById('chk_carta')?.checked || false,
+        chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
+        chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
+        chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
+        chk_rif_actualizado: document.getElementById('chk_rif_actualizado')?.checked || false,
+        chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
+        chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false,
+        chk_copia_cedula: document.getElementById('chk_copia_cedula')?.checked || false,
+        chk_copia_rif: document.getElementById('chk_copia_rif')?.checked || false
+    };
+
+    console.log("Intentando guardar en Firebase:", nuevaEmpresa);
+
+    database.ref('afiliados').push(nuevaEmpresa)
+    .then(function() {
+        alert("¡Empresa registrada con éxito en la nube!");
+        document.getElementById("formAfiliacion").reset();
+        idEmpresaSeleccionada = "";
+        document.getElementById('btnActualizar').style.display = 'none';
+    })
+    .catch(function(error) {
+        console.error("Error al registrar:", error);
+        alert("Error al registrar: " + error.message);
+    });
+  }
+
+  // 2. FUNCIÓN: BUSCAR EMPRESA POR RIF
   function buscarEmpresa(event) {
     if (event && typeof event.preventDefault === 'function') {
         event.preventDefault(); 
@@ -155,45 +213,30 @@
             snapshot.forEach(function(childSnapshot) { 
                 idEmpresaSeleccionada = childSnapshot.key; 
                 const datosEmpresa = childSnapshot.val(); 
-                console.log("Datos exactos de Firebase:", datosEmpresa);           
+                console.log("Datos exactos leídos:", datosEmpresa);           
                 
-                // Referencias a elementos de texto
-                const campoNombre = document.getElementById('nombre_empresa'); 
-                const campoRif = document.getElementById('rif_empresa'); 
-                const campoRegistro = document.getElementById('registro_empresa'); 
-                const campoRepresentantes = document.getElementById('representantes_cedulas'); 
+                // Asignación de Textos en los inputs correspondientes
+                if (document.getElementById('nombre_empresa')) document.getElementById('nombre_empresa').value = datosEmpresa.nombre || '';
+                if (document.getElementById('rif_empresa')) document.getElementById('rif_empresa').value = datosEmpresa.rif || '';
+                if (document.getElementById('registro_empresa')) document.getElementById('registro_empresa').value = datosEmpresa.fechaRegistro || '';
+                if (document.getElementById('representantes_cedulas')) document.getElementById('representantes_cedulas').value = datosEmpresa.representantes || '';
                 
-                // Referencias a Checkboxes
-                const chkCarta = document.getElementById('chk_carta');
-                const chkActa = document.getElementById('chk_acta_miembros'); 
-                const chkListado = document.getElementById('chk_listado_cpc');  
-                const chkActaConstitutiva = document.getElementById('chk_acta_actualizada'); 
-                const chkRifActualizado = document.getElementById('chk_rif_actualizado');
-                const chkPlanilla = document.getElementById('chk_planilla_beneficiarios'); 
-                const chkCarpeta = document.getElementById('chk_carpeta_marron');     
-                
-                // Nuevos Checkboxes de Consignación Física
-                const chkCopiaCedula = document.getElementById('chk_copia_cedula');
-                const chkCopiaRif = document.getElementById('chk_copia_rif');
+                // Asignación de Checkboxes
+                if (document.getElementById('chk_carta')) document.getElementById('chk_carta').checked = datosEmpresa.chk_carta || false;
+                if (document.getElementById('chk_acta_miembros')) document.getElementById('chk_acta_miembros').checked = datosEmpresa.chk_acta_miembros || false;
+                if (document.getElementById('chk_listado_cpc')) document.getElementById('chk_listado_cpc').checked = datosEmpresa.chk_listado_cpc || false; 
+                if (document.getElementById('chk_acta_actualizada')) document.getElementById('chk_acta_actualizada').checked = datosEmpresa.chk_acta_actualizada || false; 
+                if (document.getElementById('chk_rif_actualizado')) document.getElementById('chk_rif_actualizado').checked = datosEmpresa.chk_rif_actualizado || false; 
+                if (document.getElementById('chk_planilla_beneficiarios')) document.getElementById('chk_planilla_beneficiarios').checked = datosEmpresa.chk_planilla_beneficiarios || false;
+                if (document.getElementById('chk_carpeta_marron')) document.getElementById('chk_carpeta_marron').checked = datosEmpresa.chk_carpeta_marron || false;
+                if (document.getElementById('chk_copia_cedula')) document.getElementById('chk_copia_cedula').checked = datosEmpresa.chk_copia_cedula || false;
+                if (document.getElementById('chk_copia_rif')) document.getElementById('chk_copia_rif').checked = datosEmpresa.chk_copia_rif || false;
 
-                // 1. ASIGNACIÓN DE TEXTOS EN FORMULARIO
-                if (campoNombre) campoNombre.value = datosEmpresa.nombre || '';
-                if (campoRif) campoRif.value = datosEmpresa.rif || '';
-                if (campoRegistro) campoRegistro.value = datosEmpresa.fechaRegistro || '';
-                if (campoRepresentantes) campoRepresentantes.value = datosEmpresa.representantes || '';
-                
-                // 2. ASIGNACIÓN DE ESTADOS DE CHECKBOXES
-                if (chkCarta) chkCarta.checked = datosEmpresa.chk_carta || false;
-                if (chkActa) chkActa.checked = datosEmpresa.chk_acta_miembros || false;
-                if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false; 
-                if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_actualizada || false; 
-                if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false; 
-                if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_beneficiarios || false;
-                if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
-                
-                // 3. ASIGNACIÓN DE NUEVOS CHECKBOXES FISICOS
-                if (chkCopiaCedula) chkCopiaCedula.checked = datosEmpresa.chk_copia_cedula || false;
-                if (chkCopiaRif) chkCopiaRif.checked = datosEmpresa.chk_copia_rif || false;
+                // Revelar el botón de "Guardar Cambios"
+                const botonActualizar = document.getElementById('btnActualizar');
+                if (botonActualizar) {
+                    botonActualizar.style.display = 'block';
+                }
             }); 
         } else {
             alert("No se encontró ningún afiliado con el RIF ingresado.");
@@ -204,50 +247,7 @@
     });
   }
 
-  // 4. FUNCIÓN: REGISTRAR NUEVA EMPRESA
-  function registrarEmpresa(event) {
-    if (event && typeof event.preventDefault === 'function') {
-        event.preventDefault(); 
-    }
-
-    const campoNombre = document.getElementById('nombre_empresa')?.value;
-    const campoRif = document.getElementById('rif_empresa')?.value;
-    const campoRegistro = document.getElementById('registro_empresa')?.value;
-    const campoRepresentantes = document.getElementById('representantes_cedulas')?.value;
-
-    if (!campoNombre || !campoRif) {
-        alert("El Nombre de la Empresa y el RIF son obligatorios para registrar.");
-        return;
-    }
-
-    // Estructura limpia para enviar de manera ordenada los datos a tu base de datos
-    const nuevaEmpresa = {
-        nombre: campoNombre,
-        rif: campoRif,
-        fechaRegistro: campoRegistro || '',
-        representantes: campoRepresentantes || '',
-        chk_carta: document.getElementById('chk_carta')?.checked || false,
-        chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
-        chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
-        chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
-        chk_rif_actualizado: document.getElementById('chk_rif_actualizado')?.checked || false,
-        chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
-        chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false,
-        chk_copia_cedula: document.getElementById('chk_copia_cedula')?.checked || false,
-        chk_copia_rif: document.getElementById('chk_copia_rif')?.checked || false
-    };
-
-    database.ref('afiliados').push(nuevaEmpresa)
-    .then(function() {
-        alert("¡Empresa registrada con éxito!");
-        document.getElementById("formAfiliacion").reset();
-    })
-    .catch(function(error) {
-        alert("Error al registrar: " + error.message);
-    });
-  }
-
-  // 5. FUNCIÓN: GUARDAR / ACTUALIZAR CAMBIOS
+  // 3. FUNCIÓN: GUARDAR / ACTUALIZAR CAMBIOS
   function actualizarEmpresa(event) {
     if (event && typeof event.preventDefault === 'function') {
         event.preventDefault(); 
@@ -258,7 +258,6 @@
         return;
     }
 
-    // Capturamos el estado actual de los inputs y checkboxes del formulario
     const actualizaciones = {
         nombre: document.getElementById('nombre_empresa')?.value || '',
         rif: document.getElementById('rif_empresa')?.value || '',
@@ -275,7 +274,6 @@
         chk_copia_rif: document.getElementById('chk_copia_rif')?.checked || false
     };
 
-    // Ejecuta la actualización en la ruta exacta del afiliado seleccionado
     database.ref('afiliados/' + idEmpresaSeleccionada).update(actualizaciones)
     .then(function() {
         alert("¡Datos y estatus de documentos actualizados correctamente!");
