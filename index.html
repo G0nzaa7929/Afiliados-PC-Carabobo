@@ -216,7 +216,7 @@
                 const datosEmpresa = childSnapshot.val(); 
                 console.log("Datos exactos leídos:", datosEmpresa);  
                 
-           // 1. RECOLECCIÓN DE LOS ELEMENTOS REALES DE TU INTERFAZ
+           // 1.5 RECOLECCIÓN DE LOS ELEMENTOS REALES DE TU INTERFAZ
                 const campoNombre = document.getElementById('nombre_empresa'); 
                 const campoRif = document.getElementById('rif_empresa'); 
                 const campoRegistro = document.getElementById('registro_empresa'); 
@@ -233,11 +233,11 @@
                 const chkCopiaCedula = document.getElementById('chk_copia_cedula');
                 const chkCopiaRif = document.getElementById('chk_copia_rif');
 
-                // 3. INYECCIÓN AUTOMÁTICA DE LOS VALORES DESDE LA NUBE
-                if (campoNombre) campoNombre.value = datosEmpresa.nombre || '';
-                if (campoRif) campoRif.value = datosEmpresa.rif || '';
-                if (campoRegistro) campoRegistro.value = datosEmpresa.fechaRegistro || '';
-                if (campoRepresentantes) campoRepresentantes.value = datosEmpresa.representantes || '';
+              // 3. INYECCIÓN AUTOMÁTICA DE LOS VALORES DESDE LA NUBE
+                if (document.getElementById('nombre_empresa')) document.getElementById('nombre_empresa').value = datosEmpresa.nombre || '';
+                if (document.getElementById('rif_empresa')) document.getElementById('rif_empresa').value = datosEmpresa.rif || '';
+                if (document.getElementById('registro_empresa')) document.getElementById('registro_empresa').value = datosEmpresa.fechaRegistro || '';
+                if (document.getElementById('representantes_cedulas')) document.getElementById('representantes_cedulas').value = datosEmpresa.representantes || '';
 
                 if (chkCarta) chkCarta.checked = datosEmpresa.chk_carta || false;
                 if (chkActa) chkActa.checked = datosEmpresa.chk_acta_miembros || false;
@@ -251,11 +251,8 @@
 
                 // 4. ENCENDER EL BOTÓN AMARILLO DE GUARDAR
                 const botonActualizar = document.getElementById('btnActualizar');
-                if (botonActualizar) { botonActualizar.style.display = 'block'; }
-                // Revelar el botón de "Guardar Cambios"
-                const botonActualizar = document.getElementById('btnActualizar');
-                if (botonActualizar) {
-                    botonActualizar.style.display = 'block';
+                if (botonActualizar) { 
+                    botonActualizar.style.display = 'block'; 
                 }
             }); 
         } else {
