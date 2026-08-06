@@ -214,25 +214,44 @@
             snapshot.forEach(function(childSnapshot) { 
                 idEmpresaSeleccionada = childSnapshot.key; 
                 const datosEmpresa = childSnapshot.val(); 
-                console.log("Datos exactos leídos:", datosEmpresa);           
+                console.log("Datos exactos leídos:", datosEmpresa);  
                 
-                // Asignación de Textos en los inputs correspondientes
-                if (document.getElementById('nombre_empresa')) document.getElementById('nombre_empresa').value = datosEmpresa.nombre || '';
-                if (document.getElementById('rif_empresa')) document.getElementById('rif_empresa').value = datosEmpresa.rif || '';
-                if (document.getElementById('registro_empresa')) document.getElementById('registro_empresa').value = datosEmpresa.fechaRegistro || '';
-                if (document.getElementById('representantes_cedulas')) document.getElementById('representantes_cedulas').value = datosEmpresa.representantes || '';
-                
-                // Asignación de Checkboxes
-                if (document.getElementById('chk_carta')) document.getElementById('chk_carta').checked = datosEmpresa.chk_carta || false;
-                if (document.getElementById('chk_acta_miembros')) document.getElementById('chk_acta_miembros').checked = datosEmpresa.chk_acta_miembros || false;
-                if (document.getElementById('chk_listado_cpc')) document.getElementById('chk_listado_cpc').checked = datosEmpresa.chk_listado_cpc || false; 
-                if (document.getElementById('chk_acta_actualizada')) document.getElementById('chk_acta_actualizada').checked = datosEmpresa.chk_acta_actualizada || false; 
-                if (document.getElementById('chk_rif_actualizado')) document.getElementById('chk_rif_actualizado').checked = datosEmpresa.chk_rif_actualizado || false; 
-                if (document.getElementById('chk_planilla_beneficiarios')) document.getElementById('chk_planilla_beneficiarios').checked = datosEmpresa.chk_planilla_beneficiarios || false;
-                if (document.getElementById('chk_carpeta_marron')) document.getElementById('chk_carpeta_marron').checked = datosEmpresa.chk_carpeta_marron || false;
-                if (document.getElementById('chk_copia_cedula')) document.getElementById('chk_copia_cedula').checked = datosEmpresa.chk_copia_cedula || false;
-                if (document.getElementById('chk_copia_rif')) document.getElementById('chk_copia_rif').checked = datosEmpresa.chk_copia_rif || false;
+           // 1. RECOLECCIÓN DE LOS ELEMENTOS REALES DE TU INTERFAZ
+                const campoNombre = document.getElementById('nombre_empresa'); 
+                const campoRif = document.getElementById('rif_empresa'); 
+                const campoRegistro = document.getElementById('registro_empresa'); 
+                const campoRepresentantes = document.getElementById('representantes_cedulas'); 
 
+                // 2. RECOLECCIÓN DE TODOS LOS CHECKBOXES (CON LOS IDS CORRECTOS)
+                const chkCarta = document.getElementById('chk_carta');
+                const chkActa = document.getElementById('chk_acta_miembros'); 
+                const chkListado = document.getElementById('chk_listado_cpc');  
+                const chkActaConstitutiva = document.getElementById('chk_acta_actualizada'); 
+                const chkRifActualizado = document.getElementById('chk_rif_actualizado');
+                const chkPlanilla = document.getElementById('chk_planilla_beneficiarios'); 
+                const chkCarpeta = document.getElementById('chk_carpeta_marron');     
+                const chkCopiaCedula = document.getElementById('chk_copia_cedula');
+                const chkCopiaRif = document.getElementById('chk_copia_rif');
+
+                // 3. INYECCIÓN AUTOMÁTICA DE LOS VALORES DESDE LA NUBE
+                if (campoNombre) campoNombre.value = datosEmpresa.nombre || '';
+                if (campoRif) campoRif.value = datosEmpresa.rif || '';
+                if (campoRegistro) campoRegistro.value = datosEmpresa.fechaRegistro || '';
+                if (campoRepresentantes) campoRepresentantes.value = datosEmpresa.representantes || '';
+
+                if (chkCarta) chkCarta.checked = datosEmpresa.chk_carta || false;
+                if (chkActa) chkActa.checked = datosEmpresa.chk_acta_miembros || false;
+                if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false; 
+                if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_actualizada || false; 
+                if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false; 
+                if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_beneficiarios || false;
+                if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
+                if (chkCopiaCedula) chkCopiaCedula.checked = datosEmpresa.chk_copia_cedula || false;
+                if (chkCopiaRif) chkCopiaRif.checked = datosEmpresa.chk_copia_rif || false;
+
+                // 4. ENCENDER EL BOTÓN AMARILLO DE GUARDAR
+                const botonActualizar = document.getElementById('btnActualizar');
+                if (botonActualizar) { botonActualizar.style.display = 'block'; }
                 // Revelar el botón de "Guardar Cambios"
                 const botonActualizar = document.getElementById('btnActualizar');
                 if (botonActualizar) {
