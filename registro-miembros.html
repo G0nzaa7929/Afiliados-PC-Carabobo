@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -53,10 +52,10 @@
 </div>
 
 <div class="container">
-    <h2>Control de Afiliación</h2>   
+    <h2>Control de Registro</h2>   
     
     <!-- Módulo de Búsqueda Rápida -->
-    <label for="buscar_rif">Buscar Empresa Registrada (Introducir RIF):</label>
+    <label for="buscar_rif">Buscar Miembro (Introducir RIF):</label>
     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
         <input type="text" id="buscar_rif" placeholder="Ej: J-12345678-0">
         <button type="button" class="btn-bus" style="flex: 0 0 140px;" onclick="buscarEmpresa(event)">Buscar Empresa</button>
@@ -65,15 +64,15 @@
     
     <!-- Formulario Principal -->
     <form id="formAfiliacion" onsubmit="event.preventDefault();">   
-        <h3>1. Datos Básicos de la Organización</h3>       
-        <label for="nombre_empresa">Nombre de la Empresa:</label>
-        <input type="text" id="nombre_empresa" required placeholder="Razón social completa">    
+        <h3>Datos del Miembro</h3>       
+        <label for="nombre_miembro">Nombres del Miembro:</label>
+        <input type="text" id="nombre_miembro" required placeholder="nombres completos">    
         
-        <label for="rif_empresa">RIF:</label>
-        <input type="text" id="rif_empresa" required placeholder="Ej: J-12345678-0">       
+        <label for="rif_miembro">RIF:</label>
+        <input type="text" id="rif_miembro" required placeholder="Ej: V-12345678-0">       
         
-        <label for="registro_empresa">Registro:</label>
-        <input type="text" id="registro_empresa" required placeholder="Tomo, Número, Registro...">
+        <label for="registro_miembro">Fecha de Registro:</label>
+        <input type="text" id="registro_miembro" required placeholder="dia, mes, año...">
         
         <h3>2. Documentación Inicial (Casillas de Verificación)</h3>     
         <div class="row-check">
@@ -127,8 +126,8 @@
 
         <!-- Botones Dinámicos de Control -->
         <div class="btn-group">
-            <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa(event)">Registrar Empresa</button>
-            <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarEmpresa(event)">Actualizar Cambios</button>
+            <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarMiembro(event)">Registrar Miembro</button>
+            <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarMiembro(event)">Actualizar Cambios</button>
             <button type="button" id="btnLimpiar" class="btn-lim" onclick="limpiarFormulario()">Limpiar Formulario</button>
         </div>
     </form>
