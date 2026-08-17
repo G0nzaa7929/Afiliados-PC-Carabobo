@@ -111,14 +111,19 @@
         </div>
 
         <h3>4. Consignación Física de Documentos</h3>
-        <div class="row-check">
-            <input type="checkbox" id="chk_copia_cedula">
-            <label for="chk_copia_cedula">Copia de la Cédula de Identidad de los representantes.</label>
-        </div>
-        <div class="row-check">
-            <input type="checkbox" id="chk_copia_rif">
-            <label for="chk_copia_rif">Copia física del RIF de la organización.</label>
-        </div>
+      <!-- Campo para subir Copia de Cédula -->
+<div style="margin-bottom: 15px;">
+  <label for="archivo_cedula"><strong>Copia de Cédula (PDF / Imagen):</strong></label><br>
+  <input type="file" id="archivo_cedula" accept=".pdf, .jpg, .jpeg, .png">
+  <span id="ver_cedula_link" style="margin-left: 10px;"></span>
+</div>
+
+<!-- Campo para subir Copia de RIF -->
+<div style="margin-bottom: 15px;">
+  <label for="archivo_rif"><strong>Copia de RIF (PDF / Imagen):</strong></label><br>
+  <input type="file" id="archivo_rif" accept=".pdf, .jpg, .jpeg, .png">
+  <span id="ver_rif_link" style="margin-left: 10px;"></span>
+</div>
 
         <!-- Botones Dinámicos de Control -->
         <div class="btn-group">
@@ -129,6 +134,7 @@
     </form>
      <a href="planilla.pdf" download class="btn-desc">Descargar Planilla de Inscripción </a>
 </div>
+<!-- LÓGICA DE PROGRAMACIÓN CONTROLADA -->
 <!-- LÓGICA DE PROGRAMACIÓN CONTROLADA -->
 <script>
   // CREDENCIALES DE TU PROYECTO
@@ -145,14 +151,35 @@
   // VARIABLES GLOBALES
   let idEmpresaSeleccionada = "";
     
-  // INICIALIZACIÓN DEL SERVICIO DATABASE
+  // INICIALIZACIÓN DE SERVICIOS
   if (!firebase.apps.length) {
      firebase.initializeApp(firebaseConfig);
   }
   var database = firebase.database();
+  var storage = firebase.storage(); // Inicialización de Firebase Storage
+
+  // FUNCIÓN AUXILIAR: SUBIR ARCHIVO A FIREBASE STORAGE
+  async function subirArchivoStorage(inputId, rifEmpresa, tipoDocumento) {
+    const fileInput = document.getElementById(inputId);
+    if (!fileInput || fileInput.files.length === 0) {
+        return null; // Si no seleccionaron archivo, retorna nulo
+    }
+
+    const archivo = fileInput.files[0];
+    const extension = archivo.name.split('.').pop();
+    const nombreFinal = `${tipoDocumento}_${Date.now()}.${extension}`;
+    const rutaStorage = `afiliados/${rifEmpresa}/${nombreFinal}`;
+    const storageRef = storage.ref(rutaStorage);
+
+    console.log(`Subiendo ${tipoDocumento}...`);
+    const snapshot = await storageRef.put(archivo);
+    const downloadURL = await snapshot.ref.getDownloadURL();
+    console.log(`${tipoDocumento} subido con éxito:`, downloadURL);
+    return downloadURL;
+  }
 
   // 1. FUNCIÓN: REGISTRAR NUEVA EMPRESA
-  function registrarEmpresa(event) {
+  async function registrarEmpresa(event) {
     if (event && typeof event.preventDefault === 'function') {
         event.preventDefault(); 
     }
@@ -167,35 +194,38 @@
         return;
     }
 
-    const nuevaEmpresa = {
-        nombre: campoNombre,
-        rif: campoRif,
-        fechaRegistro: campoRegistro || '',
-        representantes: campoRepresentantes || '',
-        chk_carta: document.getElementById('chk_carta')?.checked || false,
-        chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
-        chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
-        chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
-        chk_rif_actualizado: document.getElementById('chk_rif_actualizado')?.checked || false,
-        chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
-        chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false,
-        chk_copia_cedula: document.getElementById('chk_copia_cedula')?.checked || false,
-        chk_copia_rif: document.getElementById('chk_copia_rif')?.checked || false
-    };
+    try {
+        alert("Procesando registro y subiendo documentos... Por favor espera.");
 
-    console.log("Intentando guardar en Firebase:", nuevaEmpresa);
+        // Subir cédula y RIF si el usuario adjuntó archivos
+        const urlCedula = await subirArchivoStorage('archivo_cedula', campoRif, 'cedula');
+        const urlRif = await subirArchivoStorage('archivo_rif', campoRif, 'rif');
 
-    database.ref('afiliados').push(nuevaEmpresa)
-    .then(function() {
+        const nuevaEmpresa = {
+            nombre: campoNombre,
+            rif: campoRif,
+            fechaRegistro: campoRegistro || '',
+            representantes: campoRepresentantes || '',
+            chk_carta: document.getElementById('chk_carta')?.checked || false,
+            chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
+            chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
+            chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
+            chk_rif_actualizado: document.getElementById('chk_rif_actualizado')?.checked || false,
+            chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
+            chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false,
+            // Guardar enlaces de descarga en la BD
+            url_cedula: urlCedula || '',
+            url_rif: urlRif || ''
+        };
+
+        await database.ref('afiliados').push(nuevaEmpresa);
         alert("¡Empresa registrada con éxito en la nube!");
-        document.getElementById("formAfiliacion").reset();
-        idEmpresaSeleccionada = "";
-        document.getElementById('btnActualizar').style.display = 'none';
-    })
-    .catch(function(error) {
+        limpiarFormulario();
+
+    } catch (error) {
         console.error("Error al registrar:", error);
         alert("Error al registrar: " + error.message);
-    });
+    }
   }
 
   // 2. FUNCIÓN: BUSCAR EMPRESA POR RIF
@@ -216,42 +246,38 @@
             snapshot.forEach(function(childSnapshot) { 
                 idEmpresaSeleccionada = childSnapshot.key; 
                 const datosEmpresa = childSnapshot.val(); 
-                console.log("Datos exactos leídos:", datosEmpresa);  
                 
-           // 1.5 RECOLECCIÓN DE LOS ELEMENTOS REALES DE TU INTERFAZ
-                const campoNombre = document.getElementById('nombre_empresa'); 
-                const campoRif = document.getElementById('rif_empresa'); 
-                const campoRegistro = document.getElementById('registro_empresa'); 
-                const campoRepresentantes = document.getElementById('representantes_cedulas'); 
-
-                // 2. RECOLECCIÓN DE TODOS LOS CHECKBOXES (CON LOS IDS CORRECTOS)
-                const chkCarta = document.getElementById('chk_carta');
-                const chkActa = document.getElementById('chk_acta_miembros'); 
-                const chkListado = document.getElementById('chk_listado_cpc');  
-                const chkActaConstitutiva = document.getElementById('chk_acta_actualizada'); 
-                const chkRifActualizado = document.getElementById('chk_rif_actualizado');
-                const chkPlanilla = document.getElementById('chk_planilla_beneficiarios'); 
-                const chkCarpeta = document.getElementById('chk_carpeta_marron');     
-                const chkCopiaCedula = document.getElementById('chk_copia_cedula');
-                const chkCopiaRif = document.getElementById('chk_copia_rif');
-
-              // 3. INYECCIÓN AUTOMÁTICA DE LOS VALORES DESDE LA NUBE
+                // 1. Inyección de textos
                 if (document.getElementById('nombre_empresa')) document.getElementById('nombre_empresa').value = datosEmpresa.nombre || '';
                 if (document.getElementById('rif_empresa')) document.getElementById('rif_empresa').value = datosEmpresa.rif || '';
                 if (document.getElementById('registro_empresa')) document.getElementById('registro_empresa').value = datosEmpresa.fechaRegistro || '';
                 if (document.getElementById('representantes_cedulas')) document.getElementById('representantes_cedulas').value = datosEmpresa.representantes || '';
 
-                if (chkCarta) chkCarta.checked = datosEmpresa.chk_carta || false;
-                if (chkActa) chkActa.checked = datosEmpresa.chk_acta_miembros || false;
-                if (chkListado) chkListado.checked = datosEmpresa.chk_listado_cpc || false; 
-                if (chkActaConstitutiva) chkActaConstitutiva.checked = datosEmpresa.chk_acta_actualizada || false; 
-                if (chkRifActualizado) chkRifActualizado.checked = datosEmpresa.chk_rif_actualizado || false; 
-                if (chkPlanilla) chkPlanilla.checked = datosEmpresa.chk_planilla_beneficiarios || false;
-                if (chkCarpeta) chkCarpeta.checked = datosEmpresa.chk_carpeta_marron || false;
-                if (chkCopiaCedula) chkCopiaCedula.checked = datosEmpresa.chk_copia_cedula || false;
-                if (chkCopiaRif) chkCopiaRif.checked = datosEmpresa.chk_copia_rif || false;
+                // 2. Checkboxes
+                if (document.getElementById('chk_carta')) document.getElementById('chk_carta').checked = datosEmpresa.chk_carta || false;
+                if (document.getElementById('chk_acta_miembros')) document.getElementById('chk_acta_miembros').checked = datosEmpresa.chk_acta_miembros || false;
+                if (document.getElementById('chk_listado_cpc')) document.getElementById('chk_listado_cpc').checked = datosEmpresa.chk_listado_cpc || false; 
+                if (document.getElementById('chk_acta_actualizada')) document.getElementById('chk_acta_actualizada').checked = datosEmpresa.chk_acta_actualizada || false; 
+                if (document.getElementById('chk_rif_actualizado')) document.getElementById('chk_rif_actualizado').checked = datosEmpresa.chk_rif_actualizado || false; 
+                if (document.getElementById('chk_planilla_beneficiarios')) document.getElementById('chk_planilla_beneficiarios').checked = datosEmpresa.chk_planilla_beneficiarios || false;
+                if (document.getElementById('chk_carpeta_marron')) document.getElementById('chk_carpeta_marron').checked = datosEmpresa.chk_carpeta_marron || false;
 
-                // 4. ENCENDER EL BOTÓN AMARILLO DE GUARDAR
+                // 3. Mostrar enlaces para abrir los PDFs/Imágenes guardados
+                const contenedorCedula = document.getElementById('ver_cedula_link');
+                if (contenedorCedula) {
+                    contenedorCedula.innerHTML = datosEmpresa.url_cedula 
+                        ? `<a href="${datosEmpresa.url_cedula}" target="_blank" style="color: #007bff; font-weight: bold; text-decoration: underline;">📄 Ver Cédula Adjunta</a>`
+                        : `<span style="color: #888;">(Sin cédula adjunta)</span>`;
+                }
+
+                const contenedorRif = document.getElementById('ver_rif_link');
+                if (contenedorRif) {
+                    contenedorRif.innerHTML = datosEmpresa.url_rif 
+                        ? `<a href="${datosEmpresa.url_rif}" target="_blank" style="color: #007bff; font-weight: bold; text-decoration: underline;">📄 Ver RIF Adjunto</a>`
+                        : `<span style="color: #888;">(Sin RIF adjunto)</span>`;
+                }
+
+                // 4. Encender el botón amarillo de guardar/actualizar
                 const botonActualizar = document.getElementById('btnActualizar');
                 if (botonActualizar) { 
                     botonActualizar.style.display = 'block'; 
@@ -267,7 +293,7 @@
   }
 
   // 3. FUNCIÓN: GUARDAR / ACTUALIZAR CAMBIOS
-  function actualizarEmpresa(event) {
+  async function actualizarEmpresa(event) {
     if (event && typeof event.preventDefault === 'function') {
         event.preventDefault(); 
     }
@@ -277,37 +303,62 @@
         return;
     }
 
-    const actualizaciones = {
-        nombre: document.getElementById('nombre_empresa')?.value || '',
-        rif: document.getElementById('rif_empresa')?.value || '',
-        fechaRegistro: document.getElementById('registro_empresa')?.value || '',
-        representantes: document.getElementById('representantes_cedulas')?.value || '',
-        chk_carta: document.getElementById('chk_carta')?.checked || false,
-        chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
-        chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
-        chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
-        chk_rif_actualizado: document.getElementById('chk_rif_actualizado')?.checked || false,
-        chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
-        chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false,
-        chk_copia_cedula: document.getElementById('chk_copia_cedula')?.checked || false,
-        chk_copia_rif: document.getElementById('chk_copia_rif')?.checked || false
-    };
+    const rifEmpresa = document.getElementById('rif_empresa')?.value;
 
-    database.ref('afiliados/' + idEmpresaSeleccionada).update(actualizaciones)
-    .then(function() {
-        alert("¡Datos y estatus de documentos actualizados correctamente!");
-    })
-    .catch(function(error) {
+    try {
+        alert("Actualizando datos y subiendo nuevos archivos si los hay... Por favor espera.");
+
+        // Subir nuevos archivos solo si el usuario seleccionó uno nuevo
+        const nuevaUrlCedula = await subirArchivoStorage('archivo_cedula', rifEmpresa, 'cedula');
+        const nuevaUrlRif = await subirArchivoStorage('archivo_rif', rifEmpresa, 'rif');
+
+        const actualizaciones = {
+            nombre: document.getElementById('nombre_empresa')?.value || '',
+            rif: rifEmpresa || '',
+            fechaRegistro: document.getElementById('registro_empresa')?.value || '',
+            representantes: document.getElementById('representantes_cedulas')?.value || '',
+            chk_carta: document.getElementById('chk_carta')?.checked || false,
+            chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
+            chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
+            chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
+            chk_rif_actualizado: document.getElementById('chk_rif_actualizado')?.checked || false,
+            chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
+            chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false
+        };
+
+        // Si se subieron archivos nuevos, actualizamos sus enlaces
+        if (nuevaUrlCedula) actualizaciones.url_cedula = nuevaUrlCedula;
+        if (nuevaUrlRif) actualizaciones.url_rif = nuevaUrlRif;
+
+        await database.ref('afiliados/' + idEmpresaSeleccionada).update(actualizaciones);
+        alert("¡Datos y documentos actualizados correctamente!");
+
+        // Refrescar para actualizar enlaces en pantalla
+        buscarEmpresa();
+
+    } catch (error) {
         console.error(error);
-        alert("Error al actualizar los datos en la base de datos.");
-    });
-  }
-    // Funcion Limpiar Formulario
-    function limpiarFormulario() {
-        const formulario = document.querySelector('form');
-        if (formulario) formulario.reset();
-        console.log("formulario limpio.");
+        alert("Error al actualizar los datos en la base de datos: " + error.message);
     }
+  }
+
+  // 4. FUNCIÓN: LIMPIAR FORMULARIO
+  function limpiarFormulario() {
+    const formulario = document.querySelector('form');
+    if (formulario) formulario.reset();
+    idEmpresaSeleccionada = "";
+
+    const btnAct = document.getElementById('btnActualizar');
+    if (btnAct) btnAct.style.display = 'none';
+
+    const verCedula = document.getElementById('ver_cedula_link');
+    if (verCedula) verCedula.innerHTML = "";
+
+    const verRif = document.getElementById('ver_rif_link');
+    if (verRif) verRif.innerHTML = "";
+
+    console.log("Formulario limpio.");
+  }
 </script>
 </body>
 </html>
