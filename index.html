@@ -32,9 +32,10 @@
         .btn-lim:hover {background-color: #5a6268; }
         .btn-desc { background-color: #17a2b8; color: white; text-align: center; text-decoration: none; display: block; margin-top: 20px; padding: 12px; border-radius: 4px; font-weight: bold; }
         .btn-desc:hover { background-color: #138496; }
-        hr { border: 0; border-top: 1px solid #dadce0; margin: 20px 0; }
-        .btn-reg, #btnRegistrarMiembro { background-color: #1a73e8; color: white; }
-        .btn-reg:hover { background-color: #e5ad04; }
+         hr { border: 0; border-top: 1px solid #dadce0; margin: 20px 0; }
+        .btn-regs { background-color: #17a2b8; color: white; text-align: center; text-decoration: none; display: block; margin-top: 20px; padding: 12px; border-radius: 4px; font-weight: bold; }
+        .btn-regs:hover { background-color: #138496; }
+       
     </style>    
     <!-- LIBRERÍAS DE FIREBASE CORREGIDAS -->
     <script src="https://gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -132,13 +133,14 @@
             <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarEmpresa(event)">Registrar Empresa</button>
             <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarEmpresa(event)">Actualizar Cambios</button>
             <button type="button" id="btnLimpiar" class="btn-lim" onclick="limpiarFormulario()">Limpiar Formulario</button>
+            <button type="button" id="btnRegistrarMiembro" class="btn-reg" onclick="registrarMiembro(event)">Registrar Miembro</button>
         </div>
     </form>
      <a href="planilla.pdf" download class="btn-desc">Descargar Planilla de Afiliacion </a>
     </div>
-    <a href="registro-miebros.html">
+    <a href="registro-miebros.html" class="btn-regs">
            Registrar miebro
-        </a><br>
+        </a>
     </div>
 </div>
 
