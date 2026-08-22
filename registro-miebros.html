@@ -90,10 +90,6 @@
             <label for="chk_listado_cpc">Listado de miembros según el formato solicitado por CPC.</label>
         </div>
         
-        <h3>3. Datos de Representación y Estatus Legal</h3>       
-        <label for="representantes_cedulas">Representantes y Cédulas:</label>
-        <textarea id="representantes_cedulas" placeholder="Ej: Juan Pérez V-12.345.678, María Gómez V-9.876.543..."></textarea>       
-        
         <div class="row-check" style="margin-top: 15px;">
             <input type="checkbox" id="chk_acta_actualizada">
             <label for="chk_acta_actualizada"><b>Acta constitutiva</b> (Marcar si está Actualizada)</label>
@@ -201,7 +197,6 @@
             nombre: campoNombre,
             cedula: campoCedula,
             fechaRegistro: campoRegistro || '',
-            representantes: campoRepresentantes || '',
             chk_carta: document.getElementById('chk_carta')?.checked || false,
             chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
             chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
@@ -302,7 +297,6 @@
             nombre: document.getElementById('nombre_miembro')?.value || '',
             cedula: cedulaMiembro || '',
             fechaRegistro: document.getElementById('registro_miembro')?.value || '',
-            representantes: document.getElementById('representantes_cedulas')?.value || '',
             chk_carta: document.getElementById('chk_carta')?.checked || false,
             chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
             chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
