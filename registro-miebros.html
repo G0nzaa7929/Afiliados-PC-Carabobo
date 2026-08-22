@@ -134,3 +134,212 @@
         </a>
     </div>
 </div>
+    <script>
+  // CREDENCIALES DE TU PROYECTO
+  var firebaseConfig = {
+    apiKey: "AIzaSyCBPd47p7AH4bNwkAy3TBRaDX4SWQEd0wM",
+    authDomain: "sistema-pc-carabobo.firebaseapp.com",
+    databaseURL: "https://sistema-pc-carabobo-default-rtdb.firebaseio.com/",
+    projectId: "sistema-pc-carabobo",
+    storageBucket: "sistema-pc-carabobo.appspot.com",
+    messagingSenderId: "559128386152",
+    appId: "1:559128386152:web:d23826e19988b9e641f9dd"
+  };
+
+  // VARIABLES GLOBALES
+  let idMiembroSeleccionado = "";
+    
+  // INICIALIZACIÓN DE SERVICIOS
+  if (!firebase.apps.length) {
+     firebase.initializeApp(firebaseConfig);
+  }
+  var database = firebase.database();
+  var storage = firebase.storage(); // Inicialización de Firebase Storage
+
+  // FUNCIÓN AUXILIAR: SUBIR ARCHIVO A FIREBASE STORAGE
+  async function subirArchivoStorage(inputId, cedulaMiembro, tipoDocumento) {
+    const fileInput = document.getElementById(inputId);
+    if (!fileInput || fileInput.files.length === 0) {
+        return null; // Si no seleccionaron archivo, retorna nulo
+    }
+
+    const archivo = fileInput.files[0];
+    const extension = archivo.name.split('.').pop();
+    const nombreFinal = `${tipoDocumento}_${Date.now()}.${extension}`;
+    const rutaStorage = `afiliados/${cedulaMiembro}/${nombreFinal}`;
+    const storageRef = storage.ref(rutaStorage);
+
+    console.log(`Subiendo ${tipoDocumento}...`);
+    const snapshot = await storageRef.put(archivo);
+    const downloadURL = await snapshot.ref.getDownloadURL();
+    console.log(`${tipoDocumento} subido con éxito:`, downloadURL);
+    return downloadURL;
+  }
+
+  // 1. FUNCIÓN: REGISTRAR NUEVA EMPRESA
+  async function registrarMiembro(event) {
+    if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault(); 
+    }
+
+    const campoNombre = document.getElementById('nombre_miembro')?.value;
+    const campoRegistro = document.getElementById('registro_miembro')?.value;
+
+    if (!campoNombre || !campocedula) {
+        alert("El Nombre del Miembro y Cedula son obligatorios para registrar.");
+        return;
+    }
+
+    try {
+        alert("Procesando registro y subiendo documentos... Por favor espera.");
+
+        // Subir cédula y RIF si el usuario adjuntó archivos
+        const urlCedula = await subirArchivoStorage('archivo_cedula', campoCedula, 'cedula');
+    
+        const nuevoMiembro = {
+            nombre: campoNombre,
+            cedula: campoCedula,
+            fechaRegistro: campoRegistro || '',
+            representantes: campoRepresentantes || '',
+            chk_carta: document.getElementById('chk_carta')?.checked || false,
+            chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
+            chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
+            chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
+            chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
+            chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false,
+            // Guardar enlaces de descarga en la BD
+            url_cedula: urlCedula || ''
+        };
+
+        await database.ref('afiliados').push(nuevoMiembro);
+        alert("¡Miembro registrado con éxito en la nube!");
+        limpiarFormulario();
+
+    } catch (error) {
+        console.error("Error al registrar:", error);
+        alert("Error al registrar: " + error.message);
+    }
+  }
+
+  // 2. FUNCIÓN: BUSCAR EMPRESA POR RIF
+  function buscarMiembro(event) {
+    if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault(); 
+    }
+    const cedulaBusqueda = document.getElementById('buscar_cedula')?.value;
+    if (!cedulaBusqueda || cedulaBusqueda.trim() === "") { 
+        alert("Por favor, ingrese una cedula para buscar."); 
+        return;
+    }
+
+    database.ref('afiliados').orderByChild('cedula').equalTo(cedulaBusqueda).once('value')
+    .then(function(snapshot) {
+        if (snapshot.exists()) { 
+            alert("¡Miembro encontrado en Firebase!");   
+            snapshot.forEach(function(childSnapshot) { 
+                idMiembroSeleccionado = childSnapshot.key; 
+                const datosMiembro = childSnapshot.val(); 
+                
+                // 1. Inyección de textos
+                if (document.getElementById('nombre_miembro')) document.getElementById('nombre_miembro').value = datosMiembro.nombre || '';
+                if (document.getElementById('cedula_miembro')) document.getElementById('cedula_miembro').value = datosMiembro.cedula || '';
+                if (document.getElementById('registro_miembro')) document.getElementById('registro_miembro').value = datosMiembro.fechaRegistro || '';
+               
+
+                // 2. Checkboxes
+                if (document.getElementById('chk_carta')) document.getElementById('chk_carta').checked = datosEmpresa.chk_carta || false;
+                if (document.getElementById('chk_acta_miembros')) document.getElementById('chk_acta_miembros').checked = datosEmpresa.chk_acta_miembros || false;
+                if (document.getElementById('chk_listado_cpc')) document.getElementById('chk_listado_cpc').checked = datosEmpresa.chk_listado_cpc || false; 
+                if (document.getElementById('chk_acta_actualizada')) document.getElementById('chk_acta_actualizada').checked = datosEmpresa.chk_acta_actualizada || false; 
+                if (document.getElementById('chk_planilla_beneficiarios')) document.getElementById('chk_planilla_beneficiarios').checked = datosEmpresa.chk_planilla_beneficiarios || false;
+                if (document.getElementById('chk_carpeta_marron')) document.getElementById('chk_carpeta_marron').checked = datosEmpresa.chk_carpeta_marron || false;
+
+                // 3. Mostrar enlaces para abrir los PDFs/Imágenes guardados
+                const contenedorCedula = document.getElementById('ver_cedula_link');
+                if (contenedorCedula) {
+                    contenedorCedula.innerHTML = datosEmpresa.url_cedula 
+                        ? `<a href="${datosEmpresa.url_cedula}" target="_blank" style="color: #007bff; font-weight: bold; text-decoration: underline;">📄 Ver Cédula Adjunta</a>`
+                        : `<span style="color: #888;">(Sin cédula adjunta)</span>`;
+                }
+
+
+                // 4. Encender el botón amarillo de guardar/actualizar
+                const botonActualizar = document.getElementById('btnActualizar');
+                if (botonActualizar) { 
+                    botonActualizar.style.display = 'block'; 
+                }
+            }); 
+        } else {
+            alert("No se encontró ningún miembro con la cedula ingresada.");
+        }
+    })
+    .catch(function(error) {
+        alert("Error crítico de Firebase: " + error.message);
+    });
+  }
+
+  // 3. FUNCIÓN: GUARDAR / ACTUALIZAR CAMBIOS
+  async function actualizarMiembro(event) {
+    if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault(); 
+    }
+
+    if (!idMiembroSeleccionada) {
+        alert("Primero debes buscar un miembro por su cedula para poder actualizarlo.");
+        return;
+    }
+
+    const cedulaMiembro = document.getElementById('cedula_miembro')?.value;
+
+    try {
+        alert("Actualizando datos... Por favor espera.");
+
+        // Subir nuevos archivos solo si el usuario seleccionó uno nuevo
+        const nuevaUrlCedula = await subirArchivoStorage('archivo_cedula', cedulMiembro, 'cedula')
+
+        const actualizaciones = {
+            nombre: document.getElementById('nombre_miembro')?.value || '',
+            rif: rifEmpresa || '',
+            fechaRegistro: document.getElementById('registro_miembro')?.value || '',
+            representantes: document.getElementById('representantes_cedulas')?.value || '',
+            chk_carta: document.getElementById('chk_carta')?.checked || false,
+            chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
+            chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
+            chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
+            chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
+            chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false
+        };
+
+        // Si se subieron archivos nuevos, actualizamos sus enlaces
+        if (nuevaUrlCedula) actualizaciones.url_cedula = nuevaUrlCedula;
+      
+        await database.ref('afiliados/' + idMiembroSeleccionado).update(actualizaciones);
+        alert("¡Datos y documentos actualizados correctamente!");
+
+        // Refrescar para actualizar enlaces en pantalla
+        buscarMiembro();
+
+    } catch (error) {
+        console.error(error);
+        alert("Error al actualizar base de datos: " + error.message);
+    }
+  }
+
+  // 4. FUNCIÓN: LIMPIAR FORMULARIO
+  function limpiarFormulario() {
+    const formulario = document.querySelector('form');
+    if (formulario) formulario.reset();
+    idMiembroSeleccionado = "";
+
+    const btnAct = document.getElementById('btnActualizar');
+    if (btnAct) btnAct.style.display = 'none';
+
+    const verCedula = document.getElementById('ver_cedula_link');
+    if (verCedula) verCedula.innerHTML = "";
+
+    console.log("Formulario limpio.");
+  }
+</script>
+    
+</body>
+</html>
