@@ -162,7 +162,7 @@
     const archivo = fileInput.files[0];
     const extension = archivo.name.split('.').pop();
     const nombreFinal = `${tipoDocumento}_${Date.now()}.${extension}`;
-    const rutaStorage = `afiliados/${cedulaMiembro}/${nombreFinal}`;
+    const rutaStorage = `miembro/${cedulaMiembro}/${nombreFinal}`;
     const storageRef = storage.ref(rutaStorage);
 
     console.log(`Subiendo ${tipoDocumento}...`);
@@ -172,7 +172,7 @@
     return downloadURL;
   }
 
-  // 1. FUNCIÓN: REGISTRAR NUEVA EMPRESA
+  // 1. FUNCIÓN: REGISTRAR NUEVO MIEMBRO
   async function registrarMiembro(event) {
     if (event && typeof event.preventDefault === 'function') {
         event.preventDefault(); 
@@ -190,7 +190,7 @@
     try {
         alert("Procesando registro y subiendo documentos... Por favor espera.");
 
-        // Subir cédula y RIF si el usuario adjuntó archivos
+        // Subir cédula si el usuario adjuntó archivos
         const urlCedula = await subirArchivoStorage('archivo_cedula', campoCedula, 'cedula');
     
         const nuevoMiembro = {
@@ -207,7 +207,7 @@
             url_cedula: urlCedula || ''
         };
 
-        await database.ref('afiliados').push(nuevoMiembro);
+        await database.ref('miembro').push(nuevoMiembro);
         alert("¡Miembro registrado con éxito en la nube!");
         limpiarFormulario();
 
@@ -217,7 +217,7 @@
     }
   }
 
-  // 2. FUNCIÓN: BUSCAR EMPRESA POR RIF
+  // 2. FUNCIÓN: BUSCAR MIEMBRO
   function buscarMiembro(event) {
     if (event && typeof event.preventDefault === 'function') {
         event.preventDefault(); 
@@ -228,7 +228,7 @@
         return;
     }
 
-    database.ref('afiliados').orderByChild('cedula').equalTo(cedulaBusqueda).once('value')
+    database.ref('miembro').orderByChild('cedula').equalTo(cedulaBusqueda).once('value')
     .then(function(snapshot) {
         if (snapshot.exists()) { 
             alert("¡Miembro encontrado en Firebase!");   
@@ -308,7 +308,7 @@
         // Si se subieron archivos nuevos, actualizamos sus enlaces
         if (nuevaUrlCedula) actualizaciones.url_cedula = nuevaUrlCedula;
       
-        await database.ref('afiliados/' + idMiembroSeleccionado).update(actualizaciones);
+        await database.ref('miembro/' + idMiembroSeleccionado).update(actualizaciones);
         alert("¡Datos y documentos actualizados correctamente!");
 
         // Refrescar para actualizar enlaces en pantalla
