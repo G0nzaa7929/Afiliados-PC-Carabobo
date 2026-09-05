@@ -203,8 +203,6 @@
             chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
             chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
             chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false,
-            // Guardar enlaces de descarga en la BD
-            url_cedula: urlCedula || ''
         };
 
         await database.ref('miembro').push(nuevoMiembro);
