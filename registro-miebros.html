@@ -203,6 +203,7 @@
             chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
             chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
             chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false,
+            url_cedula: urlCedula || ''
         };
 
         await database.ref('miembro').push(nuevoMiembro);
@@ -251,8 +252,8 @@
                 // 3. Mostrar enlaces para abrir los PDFs/Imágenes guardados
                 const contenedorCedula = document.getElementById('ver_cedula_link');
                 if (contenedorCedula) {
-                    contenedorCedula.innerHTML = datosMiembros.url_cedula 
-                        ? `<a href="${datosMiembros.url_cedula}" target="_blank" style="color: #007bff; font-weight: bold; text-decoration: underline;">📄 Ver Cédula Adjunta</a>`
+                    contenedorCedula.innerHTML = datosMiembro.url_cedula 
+                        ? `<a href="${datosMiembro.url_cedula}" target="_blank" style="color: #007bff; font-weight: bold; text-decoration: underline;">📄 Ver Cédula Adjunta</a>`
                         : `<span style="color: #888;">(Sin cédula adjunta)</span>`;
                 }
 
@@ -289,7 +290,7 @@
         alert("Actualizando datos... Por favor espera.");
 
         // Subir nuevos archivos solo si el usuario seleccionó uno nuevo
-        const nuevaUrlCedula = await subirArchivoStorage('archivo_cedula', cedulMiembro, 'cedula')
+        const nuevaUrlCedula = await subirArchivoStorage('archivo_cedula', cedulaMiembro, 'cedula');
 
         const actualizaciones = {
             nombre: document.getElementById('nombre_miembro')?.value || '',
