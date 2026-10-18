@@ -33,8 +33,21 @@ if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
       firebase.auth().signInWithEmailAndPassword(
         document.getElementById('login-email').value,
         document.getElementById('login-pass').value
-      ).catch(function () {
-        document.getElementById('login-error').textContent = 'Correo o contraseña incorrectos.';
+      ).catch(function (err) {
+        var c = err.code || '';
+        var msg = {
+          'auth/user-not-found': 'Correo o contraseña incorrectos.',
+          'auth/wrong-password': 'Correo o contraseña incorrectos.',
+          'auth/invalid-credential': 'Correo o contraseña incorrectos.',
+          'auth/invalid-login-credentials': 'Correo o contraseña incorrectos.',
+          'auth/invalid-email': 'El correo no tiene un formato válido.',
+          'auth/operation-not-allowed': 'En Firebase falta activar el método Correo electrónico/contraseña.',
+          'auth/invalid-api-key': 'La apiKey de firebase-config.js no es válida.',
+          'auth/api-key-not-valid': 'La apiKey de firebase-config.js no es válida.',
+          'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos.',
+          'auth/network-request-failed': 'Sin conexión o bloqueo de red.'
+        }[c] || 'Error de acceso.';
+        document.getElementById('login-error').textContent = msg + ' (' + c + ')';
       });
     });
 
