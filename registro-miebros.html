@@ -1,0 +1,331 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Afiliación de Miembros- CPCC</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f0f2f5; color: #333; }      
+        /* Contenedor del Encabezado Oficial */
+        .header-institucional { display: flex; align-items: center; justify-content: space-between; max-width: 650px; margin: 0 auto 20px auto; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .logo-img { width: 75px; height: 75px; object-fit: contain; }
+        .texto-header { text-align: center; flex: 1; font-weight: bold; font-size: 0.9em; line-height: 1.4; color: #1557b0; padding: 0 10px; }      
+        /* Contenedor del Formulario */
+        .container { max-width: 650px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 0 auto; }
+        h2 { color: #1a73e8; border-bottom: 2px solid #1a73e8; padding-bottom: 10px; margin-top: 0; text-align: center; }
+        h3 { color: #5f6368; margin-top: 20px; font-size: 1.1em; background: #f8f9fa; padding: 8px; border-left: 4px solid #1a73e8; }
+        label { font-weight: bold; display: block; margin-top: 12px; margin-bottom: 5px; }
+        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 60px; resize: none; }
+        .row-check { display: flex; align-items: center; background: #fcfcfc; padding: 10px; border: 1px solid #f1f3f4; border-radius: 4px; margin-bottom: 8px; }
+        .row-check input[type="checkbox"] { margin-right: 12px; transform: scale(1.2); cursor: pointer; }
+        .row-check label { margin: 0; font-weight: normal; cursor: pointer; }
+        .btn-group { margin-top: 25px; display: flex; gap: 10px; }
+        button { padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.95em; flex: 1; transition: background 0.2s; }
+        .btn-reg { background-color: #34a853; color: white; }
+        .btn-reg:hover { background-color: #2b8c44; }
+        .btn-act, #btnActualizar { background-color: #fbbc05; color: #202124; }
+        .btn-act:hover { background-color: #e5ad04; }
+        .btn-bus { background-color: #1a73e8; color: white; }
+        .btn-bus:hover { background-color: #1557b0; }
+        .btn-lim { background-color: #6c757d; color: white;}
+        .btn-lim:hover {background-color: #5a6268; }
+        .btn-desc { background-color: #17a2b8; color: white; text-align: center; text-decoration: none; display: block; margin-top: 20px; padding: 12px; border-radius: 4px; font-weight: bold; }
+        .btn-desc:hover { background-color: #138496; }
+        hr { border: 0; border-top: 1px solid #dadce0; margin: 20px 0; }
+        .btn-regs { background-color: #34a853; color: white; text-align: center; text-decoration: none; display: block; margin-top: 20px; padding: 12px; border-radius: 4px; font-weight: bold; }
+        .btn-regs:hover { background-color: #2b8c44; }
+    </style>    
+    <!-- LIBRERÍAS DE FIREBASE CORREGIDAS -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth-gate.js"></script>
+</head>
+<body>
+
+<!-- Encabezado Institucional Requerido -->
+<div class="header-institucional">
+    <img src="logo.jpg" alt="Logo Izquierdo" class="logo-img">
+    <div class="texto-header">
+        República Bolivariana de Venezuela<br>
+        Junta directiva Ad hoc de la Federación campesina Bolivariana de Venezuela FCBV<br>
+        Cámara de Productores y Campesinos de Carabobo
+    </div>
+    <img src="logo2.jpg" alt="Logo Derecho" class="logo-img">
+</div>
+
+<div class="container">
+    <h2>Control de Afiliación</h2>   
+    
+    <!-- Módulo de Búsqueda Rápida -->
+    <label for="buscar_cedula">Buscar Miembro Registrado (Introducir Cedula):</label>
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" id="buscar_cedula" placeholder="Ej: V-12345678">
+        <button type="button" class="btn-bus" style="flex: 0 0 140px;" onclick="buscarMiembro(event)">Buscar Miembro</button>
+    </div>   
+    <hr>
+    
+    <!-- Formulario Principal -->
+    <form id="formAfiliacion" onsubmit="event.preventDefault();">   
+        <h3>1. Datos Básicos del Afiliado</h3>       
+        <label for="nombre_miembro">Nombres del Miembro:</label>
+        <input type="text" id="nombre_miembro" required placeholder="nombres y apellidos completos">    
+        
+        <label for="cedula_miembro">CEDULA:</label>
+        <input type="text" id="cedula_miembro" required placeholder="Ej: V-12345678">       
+        
+        <label for="registro_miembro">Fecha de Afiliacion:</label>
+        <input type="text" id="registro_miembro" required placeholder="Dia, Mes, Año...">
+        
+        <h3>2. Documentación (Casillas de Verificación)</h3>     
+        <div class="row-check">
+            <input type="checkbox" id="chk_carta">
+            <label for="chk_carta">Carta de solicitud formal suscrita por los representantes legales de la organización.</label>
+        </div>       
+        <div class="row-check">
+            <input type="checkbox" id="chk_acta_miembros">
+            <label for="chk_acta_miembros">Acta de registro de miembros autorizados para participar en la cámara.</label>
+        </div>       
+        <div class="row-check">
+            <input type="checkbox" id="chk_listado_cpc">
+            <label for="chk_listado_cpc">Listado de miembros según el formato solicitado por CPC.</label>
+        </div>
+        
+        <div class="row-check" style="margin-top: 15px;">
+            <input type="checkbox" id="chk_acta_actualizada">
+            <label for="chk_acta_actualizada"><b>Acta constitutiva</b> (Marcar si está Actualizada)</label>
+        </div>      
+        <div class="row-check">
+            <input type="checkbox" id="chk_rif_actualizado">
+            <label for="chk_rif_actualizado"><b>RIF</b> (Marcar si está Actualizado)</label>
+        </div>      
+        <div class="row-check">
+            <input type="checkbox" id="chk_planilla_beneficiarios">
+            <label for="chk_planilla_beneficiarios">Planilla para inscripción de los miembros de su organización para los beneficiarios.</label>
+        </div>      
+        <div class="row-check">
+            <input type="checkbox" id="chk_carpeta_marron">
+            <label for="chk_carpeta_marron">Carpeta marrón con etiqueta.</label>
+        </div>
+
+        <h3>4. Consignación de Documento</h3>
+      <!-- Campo para subir Copia de Cédula -->
+<div style="margin-bottom: 15px;">
+  <label for="archivo_cedula"><strong>Cédula (Imagen):</strong></label><br>
+  <input type="file" id="archivo_cedula" accept=".pdf, .jpg, .jpeg, .png">
+  <span id="ver_cedula_link" style="margin-left: 10px;"></span>
+</div>
+
+
+        <!-- Botones Dinámicos de Control -->
+        <div class="btn-group">
+            <button type="button" id="btnRegistrar" class="btn-reg" onclick="registrarMiembro(event)">Registrar Miembro</button>
+            <button type="button" id="btnActualizar" class="btn-act" onclick="actualizarMiembro(event)">Actualizar </button>
+            <button type="button" id="btnLimpiar" class="btn-lim" onclick="limpiarFormulario()">Limpiar Formulario</button>
+        </div>
+    </form>
+     <a href="planilla.pdf" download class="btn-desc">Descargar Planilla de Afiliacion </a>
+    </div>
+    <a href="index.html" class="btn-regs">
+           Registrar Empresa
+        </a>
+    </div>
+</div>
+    <script>
+  // VARIABLES GLOBALES
+  let idMiembroSeleccionado = "";
+    
+  // INICIALIZACIÓN DE SERVICIOS
+  if (!firebase.apps.length) {
+     firebase.initializeApp(firebaseConfig);
+  }
+  var database = firebase.database();
+  var storage = firebase.storage(); // Inicialización de Firebase Storage
+
+  // FUNCIÓN AUXILIAR: SUBIR ARCHIVO A FIREBASE STORAGE
+  async function subirArchivoStorage(inputId, cedulaMiembro, tipoDocumento) {
+    const fileInput = document.getElementById(inputId);
+    if (!fileInput || fileInput.files.length === 0) {
+        return null; // Si no seleccionaron archivo, retorna nulo
+    }
+
+    const archivo = fileInput.files[0];
+    const extension = archivo.name.split('.').pop();
+    const nombreFinal = `${tipoDocumento}_${Date.now()}.${extension}`;
+    const rutaStorage = `miembro/${cedulaMiembro}/${nombreFinal}`;
+    const storageRef = storage.ref(rutaStorage);
+
+    console.log(`Subiendo ${tipoDocumento}...`);
+    const snapshot = await storageRef.put(archivo);
+    const downloadURL = await snapshot.ref.getDownloadURL();
+    console.log(`${tipoDocumento} subido con éxito:`, downloadURL);
+    return downloadURL;
+  }
+
+  // 1. FUNCIÓN: REGISTRAR NUEVO MIEMBRO
+  async function registrarMiembro(event) {
+    if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault(); 
+    }
+
+    const campoNombre = document.getElementById('nombre_miembro')?.value;
+    const campoRegistro = document.getElementById('registro_miembro')?.value;
+    const campoCedula = document.getElementById('cedula_miembro')?.value;
+
+    if (!campoNombre || !campoCedula) {
+        alert("El Nombre del Miembro y Cedula son obligatorios para registrar.");
+        return;
+    }
+
+    try {
+        alert("Procesando registro y subiendo documentos... Por favor espera.");
+
+        // Subir cédula si el usuario adjuntó archivos
+        const urlCedula = await subirArchivoStorage('archivo_cedula', campoCedula, 'cedula');
+    
+        const nuevoMiembro = {
+            nombre: campoNombre,
+            cedula: campoCedula,
+            fechaRegistro: campoRegistro || '',
+            chk_carta: document.getElementById('chk_carta')?.checked || false,
+            chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
+            chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
+            chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
+            chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
+            chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false,
+            url_cedula: urlCedula || ''
+        };
+
+        await database.ref('miembro').push(nuevoMiembro);
+        alert("¡Miembro registrado con éxito en la nube!");
+        limpiarFormulario();
+
+    } catch (error) {
+        console.error("Error al registrar:", error);
+        alert("Error al registrar: " + error.message);
+    }
+  }
+
+  // 2. FUNCIÓN: BUSCAR MIEMBRO
+  function buscarMiembro(event) {
+    if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault(); 
+    }
+    const cedulaBusqueda = document.getElementById('buscar_cedula')?.value;
+    if (!cedulaBusqueda || cedulaBusqueda.trim() === "") { 
+        alert("Por favor, ingrese una cedula para buscar."); 
+        return;
+    }
+
+    database.ref('miembro').orderByChild('cedula').equalTo(cedulaBusqueda).once('value')
+    .then(function(snapshot) {
+        if (snapshot.exists()) { 
+            alert("¡Miembro encontrado en Firebase!");   
+            snapshot.forEach(function(childSnapshot) { 
+                idMiembroSeleccionado = childSnapshot.key; 
+                const datosMiembro = childSnapshot.val(); 
+                
+                // 1. Inyección de textos
+                if (document.getElementById('nombre_miembro')) document.getElementById('nombre_miembro').value = datosMiembro.nombre || '';
+                if (document.getElementById('cedula_miembro')) document.getElementById('cedula_miembro').value = datosMiembro.cedula || '';
+                if (document.getElementById('registro_miembro')) document.getElementById('registro_miembro').value = datosMiembro.fechaRegistro || '';
+               
+
+                // 2. Checkboxes
+                if (document.getElementById('chk_carta')) document.getElementById('chk_carta').checked = datosMiembro.chk_carta || false;
+                if (document.getElementById('chk_acta_miembros')) document.getElementById('chk_acta_miembros').checked = datosMiembro.chk_acta_miembros || false;
+                if (document.getElementById('chk_listado_cpc')) document.getElementById('chk_listado_cpc').checked = datosMiembro.chk_listado_cpc || false; 
+                if (document.getElementById('chk_acta_actualizada')) document.getElementById('chk_acta_actualizada').checked = datosMiembro.chk_acta_actualizada || false; 
+                if (document.getElementById('chk_planilla_beneficiarios')) document.getElementById('chk_planilla_beneficiarios').checked = datosMiembro.chk_planilla_beneficiarios || false;
+                if (document.getElementById('chk_carpeta_marron')) document.getElementById('chk_carpeta_marron').checked = datosMiembro.chk_carpeta_marron || false;
+
+                // 3. Mostrar enlaces para abrir los PDFs/Imágenes guardados
+                const contenedorCedula = document.getElementById('ver_cedula_link');
+                if (contenedorCedula) {
+                    contenedorCedula.innerHTML = datosMiembro.url_cedula 
+                        ? `<a href="${datosMiembro.url_cedula}" target="_blank" style="color: #007bff; font-weight: bold; text-decoration: underline;">📄 Ver Cédula Adjunta</a>`
+                        : `<span style="color: #888;">(Sin cédula adjunta)</span>`;
+                }
+
+
+                // 4. Encender el botón amarillo de guardar/actualizar
+                const botonActualizar = document.getElementById('btnActualizar');
+                if (botonActualizar) { 
+                    botonActualizar.style.display = 'block'; 
+                }
+            }); 
+        } else {
+            alert("No se encontró ningún miembro con la cedula ingresada.");
+        }
+    })
+    .catch(function(error) {
+        alert("Error crítico de Firebase: " + error.message);
+    });
+  }
+
+  // 3. FUNCIÓN: GUARDAR / ACTUALIZAR CAMBIOS
+  async function actualizarMiembro(event) {
+    if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault(); 
+    }
+
+    if (!idMiembroSeleccionado) {
+        alert("Primero debes buscar un miembro por su cedula para poder actualizarlo.");
+        return;
+    }
+
+    const cedulaMiembro = document.getElementById('cedula_miembro')?.value;
+
+    try {
+        alert("Actualizando datos... Por favor espera.");
+
+        // Subir nuevos archivos solo si el usuario seleccionó uno nuevo
+        const nuevaUrlCedula = await subirArchivoStorage('archivo_cedula', cedulaMiembro, 'cedula');
+
+        const actualizaciones = {
+            nombre: document.getElementById('nombre_miembro')?.value || '',
+            cedula: cedulaMiembro || '',
+            fechaRegistro: document.getElementById('registro_miembro')?.value || '',
+            chk_carta: document.getElementById('chk_carta')?.checked || false,
+            chk_acta_miembros: document.getElementById('chk_acta_miembros')?.checked || false,
+            chk_listado_cpc: document.getElementById('chk_listado_cpc')?.checked || false,
+            chk_acta_actualizada: document.getElementById('chk_acta_actualizada')?.checked || false,
+            chk_planilla_beneficiarios: document.getElementById('chk_planilla_beneficiarios')?.checked || false,
+            chk_carpeta_marron: document.getElementById('chk_carpeta_marron')?.checked || false
+        };
+
+        // Si se subieron archivos nuevos, actualizamos sus enlaces
+        if (nuevaUrlCedula) actualizaciones.url_cedula = nuevaUrlCedula;
+      
+        await database.ref('miembro/' + idMiembroSeleccionado).update(actualizaciones);
+        alert("¡Datos y documentos actualizados correctamente!");
+
+        // Refrescar para actualizar enlaces en pantalla
+        buscarMiembro();
+
+    } catch (error) {
+        console.error(error);
+        alert("Error al actualizar base de datos: " + error.message);
+    }
+  }
+
+  // 4. FUNCIÓN: LIMPIAR FORMULARIO
+  function limpiarFormulario() {
+    const formulario = document.querySelector('form');
+    if (formulario) formulario.reset();
+    idMiembroSeleccionado = "";
+
+    const btnAct = document.getElementById('btnActualizar');
+    if (btnAct) btnAct.style.display = 'none';
+
+    const verCedula = document.getElementById('ver_cedula_link');
+    if (verCedula) verCedula.innerHTML = "";
+
+    console.log("Formulario limpio.");
+  }
+</script>
+    
+</body>
+</html>
